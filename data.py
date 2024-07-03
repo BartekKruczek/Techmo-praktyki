@@ -1,0 +1,144 @@
+import os
+import matplotlib.pyplot as plt
+
+class DataHandler:
+    def __init__(self, data_path: str) -> None:
+        self.data_path = data_path
+
+    def __repr__(self) -> str:
+        return f"Klasa do obsługi danych z folderu: {self.data_path}"
+    
+    def czech_language_counter(self) -> dict:
+        """
+        {language: {healthy: int, pathological: int}}
+        """
+        languages = {}
+        
+        # czech
+        for root, dirs, files in os.walk(os.path.join(self.data_path, 'Czech_SLI')):
+            for dir in dirs:
+                if dir == "Healthy":
+                    for root, dirs, files in os.walk(os.path.join(self.data_path, 'Czech_SLI', 'Healthy')):
+                        for dir in dirs:
+                            for root, dirs, files in os.walk(os.path.join(self.data_path, 'Czech_SLI', 'Healthy', dir)):
+                                for file in files:
+                                    if file.endswith(".wav"):
+                                        # increment language counter
+                                        if "Czech" not in languages:
+                                            languages["Czech"] = {"healthy": 1, "pathological": 0}
+                                        else:
+                                            languages["Czech"]["healthy"] += 1
+                elif dir == "Patients":
+                    for root, dirs, files in os.walk(os.path.join(self.data_path, 'Czech_SLI', 'Patients')):
+                        for dir in dirs:
+                            for root, dirs, files in os.walk(os.path.join(self.data_path, 'Czech_SLI', 'Patients', dir)):
+                                for file in files:
+                                    if file.endswith(".wav"):
+                                        # increment language counter
+                                        if "Czech" not in languages:
+                                            languages["Czech"] = {"healthy": 0, "pathological": 1}
+                                        else:
+                                            languages["Czech"]["pathological"] += 1
+
+        return languages
+
+    def english_language_counter(self) -> dict:
+        languages = {}
+
+        # english, Torgo only patients
+        for root, dirs1, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria')):
+            for dir1 in dirs1:
+                for root, dirs2, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1)):
+                    for dir2 in dirs2:
+                        for root, dirs3, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2)):
+                            for dir3 in dirs3:
+                                if dir3 == "Session1" or dir3 == "Session2" or dir3 == "Session3":
+                                    for root, dirs4, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2, dir3)):
+                                        for dir4 in dirs4:
+                                            if dir4 == "wav_arrayMic" or dir4 == "wav_headMic":
+                                                for root, dirs5, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2, dir3, dir4)):
+                                                    for file in files:
+                                                        if file.endswith(".wav"):
+                                                            # increment language counter
+                                                            if "English" not in languages:
+                                                                languages["English"] = {"healthy": 0, "pathological": 1}
+                                                            else:
+                                                                languages["English"]["pathological"] += 1
+        return languages
+    
+    def german_language_counter(self) -> dict:
+        languages = {}
+
+        # german
+        for root, dirs1, files in os.walk(os.path.join(self.data_path, 'SVD')):
+            for dir1 in dirs1:
+                for root, dirs2, files in os.walk(os.path.join(self.data_path, 'SVD', dir1)):
+                    for dir2 in dirs2:
+                        if dir2 == "Healthy":
+                            for root, dirs3, files in os.walk(os.path.join(self.data_path, 'SVD', dir1, dir2)):
+                                for dir3 in dirs3:  
+                                    # print(dir3)
+                                    for root, dirs4, files in os.walk(os.path.join(self.data_path, 'SVD', dir1, dir2, dir3)):
+                                        for dir4 in dirs4:
+                                            for root, dirs5, files in os.walk(os.path.join(self.data_path, 'SVD', dir1, dir2, dir3, dir4)):
+                                                for file in files:
+                                                    if file.endswith(".wav"):
+                                                        # increment language counter
+                                                        if "German" not in languages:
+                                                            languages["German"] = {"healthy": 1, "pathological": 0}
+                                                        else:
+                                                            languages["German"]["healthy"] += 1
+                        elif dir2 == "Pathological":
+                            for root, dirs3, files in os.walk(os.path.join(self.data_path, 'SVD', dir1, dir2)):
+                                for dir3 in dirs3:  
+                                    # print(dir3)
+                                    for root, dirs4, files in os.walk(os.path.join(self.data_path, 'SVD', dir1, dir2, dir3)):
+                                        for dir4 in dirs4:
+                                            for root, dirs5, files in os.walk(os.path.join(self.data_path, 'SVD', dir1, dir2, dir3, dir4)):
+                                                for file in files:
+                                                    if file.endswith(".wav"):
+                                                        # increment language counter
+                                                        if "German" not in languages:
+                                                            languages["German"] = {"healthy": 0, "pathological": 1}
+                                                        else:
+                                                            languages["German"]["pathological"] += 1
+
+        return languages
+    
+    def all_languages_counter(self) -> dict:
+        languages = {}
+        languages.update(self.czech_language_counter())
+        languages.update(self.english_language_counter())
+        languages.update(self.german_language_counter())
+        return languages    
+
+    def plot_statistics(self, languages: dict) -> None: 
+        labels = list(languages.keys())
+        healthy = [lang["healthy"] for lang in languages.values()]
+        pathological = [lang["pathological"] for lang in languages.values()]
+        
+        total_samples = [h + p for h, p in zip(healthy, pathological)]
+
+        plt.figure(figsize=(10, 7))
+        plt.pie(total_samples, labels=labels, autopct='%1.1f%%', startangle=140)
+        plt.title('Total Samples Distribution by Language')
+        plt.savefig('./png/total_samples.png')
+        plt.close()
+
+        # Function to filter out 0% slices
+        def filter_data(data, labels):
+            filtered_data = [(d, l) for d, l in zip(data, labels) if d > 0]
+            return [d for d, l in filtered_data], [l for d, l in filtered_data]
+
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
+
+        healthy_filtered, labels_filtered_healthy = filter_data(healthy, labels)
+        ax1.pie(healthy_filtered, labels=labels_filtered_healthy, autopct='%1.1f%%', startangle=140)
+        ax1.set_title('Healthy Samples Distribution')
+
+        pathological_filtered, labels_filtered_pathological = filter_data(pathological, labels)
+        ax2.pie(pathological_filtered, labels=labels_filtered_pathological, autopct='%1.1f%%', startangle=140)
+        ax2.set_title('Pathological Samples Distribution')
+
+        plt.savefig('./png/healthy_pathological_samples.png')
+        plt.close()
