@@ -19,8 +19,10 @@ def main():
     if excel_creation:
         my_utils.excel_creator(my_utils.combined_language_pd())
 
-    # audio path iteration section
-    my_feature.get_MFCC()
+    # audio path iteration section, MFCC extraction and Excel update
+    update_excel = False
+    if update_excel:
+        y_values, sr_values, mfcc_values = my_feature.get_MFCC()
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 
 class UtilsHandler:
     def __init__(self, data_path: str):
@@ -83,6 +84,14 @@ class UtilsHandler:
     
     def excel_creator(self, data_frame: pd.DataFrame) -> None:
         data_frame.to_excel("combined_languages.xlsx", index=False)
+
+    def excel_updater(self, df: pd.DataFrame, y_values: list, sr_values: list, mfcc_values: list) -> None:
+            df['y'] = y_values
+            df['sr'] = sr_values
+            df['MFCC'] = mfcc_values
+            output_file = 'updated_combined_languages.xlsx'
+            df.to_excel(output_file, index=False)
+            print(f"Data has been updated and saved to {output_file}")
 
     def audio_path_iterator(self, data_frame: pd.DataFrame) -> iter:
         for index, row in data_frame.iterrows():
