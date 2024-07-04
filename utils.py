@@ -83,3 +83,7 @@ class UtilsHandler:
     
     def excel_creator(self, data_frame: pd.DataFrame) -> None:
         data_frame.to_excel("combined_languages.xlsx", index=False)
+
+    def audio_path_iterator(self, data_frame: pd.DataFrame) -> iter:
+        for index, row in data_frame.iterrows():
+            yield row['file_path']
