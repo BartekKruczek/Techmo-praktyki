@@ -2,6 +2,8 @@ from data import DataHandler
 from utils import UtilsHandler
 from feature_extraction import FeatureExtractionHandler
 from dataloader import DataLoaderHandler
+from model import Model
+from train import TrainHandler
 
 def main():
     my_data = DataHandler("Database")
@@ -31,7 +33,25 @@ def main():
     # split data section, three sets: train, validation, test
     my_dataloader = DataLoaderHandler(dataframe = dataframe)
     X_train, X_test, y_train, y_test = my_dataloader.split_data()
-    # print(f"X_train: {X_train.shape}, X_test: {X_test.shape}, y_train: {y_train.shape}, y_test: {y_test.shape}")
+    
+    # debug
+    print(f"X_train type: {type(X_train)}")
+    print(f"X_train shape: {X_train.shape}")
+    print(f"y_train type: {type(y_train)}")
+    print(f"y_train shape: {y_train.shape}")
+
+    # model training section
+    model = Model()
+    batch_size = 128
+    learning_rate = 0.001
+    num_epochs = 10
+
+    train_model = False
+    if train_model:
+        train = TrainHandler(model = model, X_train = X_train, X_test = X_test, y_train = y_train, y_test = y_test, batch_size = batch_size, learning_rate = learning_rate, num_epochs = num_epochs)
+        train.train()
+    
+
 
 if __name__ == '__main__':
     main()
