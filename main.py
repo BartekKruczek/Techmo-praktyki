@@ -1,6 +1,7 @@
 from data import DataHandler
 from utils import UtilsHandler
 from feature_extraction import FeatureExtractionHandler
+from dataloader import DataLoaderHandler
 
 def main():
     my_data = DataHandler("Database")
@@ -25,9 +26,10 @@ def main():
         y_values, sr_values, mfcc_values = my_feature.get_MFCC()
 
     # dataframe from excel section
-    dataframe_from_excel = True
-    if dataframe_from_excel:
-        print(my_utils.dataframe_from_excel("updated_combined_languages.xlsx").head())
+    dataframe = my_utils.dataframe_from_excel("updated_combined_languages.xlsx")
+
+    # split data section, three sets: train, validation, test
+    my_dataloader = DataLoaderHandler(dataframe = dataframe)
 
 if __name__ == '__main__':
     main()
