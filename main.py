@@ -30,6 +30,8 @@ def main():
 
     # split data section, three sets: train, validation, test
     my_dataloader = DataLoaderHandler(dataframe = dataframe)
+    X_train, X_test, y_train, y_test = my_dataloader.split_data()
+    # print(f"X_train: {X_train.shape}, X_test: {X_test.shape}, y_train: {y_train.shape}, y_test: {y_test.shape}")
 
 if __name__ == '__main__':
     main()

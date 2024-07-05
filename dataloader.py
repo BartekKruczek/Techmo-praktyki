@@ -1,5 +1,7 @@
 import pandas as pd
 
+from sklearn.model_selection import train_test_split
+
 class DataLoaderHandler():
     def __init__(self, dataframe: pd.DataFrame):
         self.dataframe = dataframe
@@ -11,4 +13,9 @@ class DataLoaderHandler():
         return self.dataframe
     
     def split_data(self):
-        pass
+        dataframe = self.get_dataframe()
+
+        # split data into three sets: train, validation, test
+        X_train, X_test, y_train, y_test = train_test_split(dataframe['file_path'], dataframe['healthy_status'], test_size=0.2, random_state=42)
+
+        return X_train, X_test, y_train, y_test
