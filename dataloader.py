@@ -16,6 +16,6 @@ class DataLoaderHandler():
         dataframe = self.get_dataframe()
 
         # split data into three sets: train, validation, test
-        X_train, X_test, y_train, y_test = train_test_split(dataframe['file_path'], dataframe['healthy_status'], test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(dataframe['MFCC'], dataframe['healthy_status'], test_size=0.2, random_state=42)
 
         return X_train, X_test, y_train, y_test
