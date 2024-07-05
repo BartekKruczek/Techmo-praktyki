@@ -86,13 +86,19 @@ class UtilsHandler:
         data_frame.to_excel("combined_languages.xlsx", index=False)
 
     def excel_updater(self, df: pd.DataFrame, y_values: list, sr_values: list, mfcc_values: list) -> None:
-            df['y'] = y_values
-            df['sr'] = sr_values
-            df['MFCC'] = mfcc_values
-            output_file = 'updated_combined_languages.xlsx'
-            df.to_excel(output_file, index=False)
-            print(f"Data has been updated and saved to {output_file}")
+        df['y'] = y_values
+        df['sr'] = sr_values
+        df['MFCC'] = mfcc_values
+        output_file = 'updated_combined_languages.xlsx'
+        df.to_excel(output_file, index=False)
+        print(f"Data has been updated and saved to {output_file}")
 
     def audio_path_iterator(self, data_frame: pd.DataFrame) -> iter:
         for index, row in data_frame.iterrows():
             yield row['file_path']
+
+    def dataframe_from_excel(self, excel_file: str) -> pd.DataFrame:
+        # labeling data, 0 - healthy, 1 - pathological, find healthy_status column, create new column with labels
+        data = pd.read_excel(excel_file)
+        data['label'] = np.where(data['healthy_status'] == 'healthy', 0, 1)
+        return data

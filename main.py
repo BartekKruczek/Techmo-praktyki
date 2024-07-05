@@ -24,5 +24,10 @@ def main():
     if update_excel:
         y_values, sr_values, mfcc_values = my_feature.get_MFCC()
 
+    # dataframe from excel section
+    dataframe_from_excel = True
+    if dataframe_from_excel:
+        print(my_utils.dataframe_from_excel("updated_combined_languages.xlsx").head())
+
 if __name__ == '__main__':
     main()
