@@ -1,13 +1,11 @@
 import torch
 
 class TrainHandler():
-    def __init__(self, model, X_train, X_test, y_train, y_test) -> None:
+    def __init__(self, model, train_set, valid_set, test_set) -> None:
         self.model = model
-        self.X_train = X_train
-        self.X_test = X_test
-        self.y_train = y_train
-        self.y_test = y_test
-        self.batch_size = 64
+        self.train_set = train_set
+        self.valid_set = valid_set
+        self.test_set = test_set
         self.learning_rate = 0.001
         self.num_epochs = 10
 
@@ -20,20 +18,56 @@ class TrainHandler():
 
         for epoch in range(self.num_epochs):
             self.model.train()
-            optimizer.zero_grad()
-            output = self.model(self.X_train)
-            loss = criterion(output, self.y_train)
-            loss.backward()
-            optimizer.step()
+            running_loss = 0.0
+            for i, data in enumerate(self.train_set, 0):
+                inputs, labels = data
 
+                # Reshape the inputs to add the channel dimension (batch_size, 1, height, width)
+                inputs = inputs.unsqueeze(1)
+
+                # Zero the parameter gradients
+                optimizer.zero_grad()
+
+                # Forward + backward + optimize
+                outputs = self.model(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+
+                # Print statistics
+                running_loss += loss.item()
+                if i % 10 == 9:  # Print every 10 mini-batches
+                    print(f"[{epoch + 1}, {i + 1}] loss: {running_loss / 10:.3f}")
+                    running_loss = 0.0
+
+            # Validation
             self.model.eval()
+            correct = 0
+            total = 0
             with torch.no_grad():
-                correct = 0
-                total = 0
-                output = self.model(self.X_test)
-                _, predicted = torch.max(output, 1)
-                total += self.y_test.size(0)
-                correct += (predicted == self.y_test).sum().item()
+                for data in self.valid_set:
+                    inputs, labels = data
+                    inputs = inputs.unsqueeze(1)
+                    outputs = self.model(inputs)
+                    _, predicted = torch.max(outputs.data, 1)
+                    total += labels.size(0)
+                    correct += (predicted == labels).sum().item()
 
-            print(f"Epoch {epoch+1}/{self.num_epochs}, Loss: {loss.item()}, Accuracy: {round(correct/total, 3)}")
-        return self.model
+            print(f"Epoch {epoch + 1}, Validation Accuracy: {100 * correct / total:.2f}%")
+
+        print("Finished Training")
+
+        # Testing
+        self.model.eval()
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            for data in self.test_set:
+                inputs, labels = data
+                inputs = inputs.unsqueeze(1)
+                outputs = self.model(inputs)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+
+        print(f"Test Accuracy: {100 * correct / total:.2f}%")

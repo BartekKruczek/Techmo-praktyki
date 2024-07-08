@@ -1,8 +1,9 @@
 import os
 import pandas as pd
 import numpy as np
-import librosa
-import ast
+import torch
+
+from torch.utils.data import SubsetRandomSampler
 
 class UtilsHandler:
     def __init__(self, data_path: str):
@@ -89,3 +90,22 @@ class UtilsHandler:
 
     def dataframe_from_excel(self, excel_file: str) -> pd.DataFrame:
         return pd.read_excel(excel_file)
+    
+    def split_dataset(self, data_loader: torch.utils.data.DataLoader):
+        dataset_size = len(data_loader)
+        indices = list(range(dataset_size))
+        split1 = int(np.floor(0.6 * dataset_size))
+        split2 = int(np.floor(0.8 * dataset_size))
+        np.random.shuffle(indices)
+        train_indices, val_indices, test_indices = indices[:split1], indices[split1:split2], indices[split2:]
+
+        train_sampler = SubsetRandomSampler(train_indices)
+        val_sampler = SubsetRandomSampler(val_indices)
+        test_sampler = SubsetRandomSampler(test_indices)
+
+        train_loader = torch.utils.data.DataLoader(data_loader, batch_size=32, sampler=train_sampler)
+        val_loader = torch.utils.data.DataLoader(data_loader, batch_size=32, sampler=val_sampler)
+        test_loader = torch.utils.data.DataLoader(data_loader, batch_size=32, sampler=test_sampler)
+
+        return train_loader, val_loader, test_loader
+
