@@ -2,8 +2,7 @@ import pandas as pd
 import librosa
 import torch
 import numpy as np
-
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, SubsetRandomSampler
 
 class DataLoaderHandler(Dataset):
     def __init__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -34,10 +33,10 @@ class DataLoaderHandler(Dataset):
 
         # load audio file, extract MFCC features
         y, sr = librosa.load(audio_path)
-        mfcc = librosa.feature.mfcc(y = y, sr = sr, n_mfcc = 13)
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
 
         # convert to tensor
-        mfcc = torch.tensor(mfcc, dtype = torch.float32)
-        label = torch.tensor(label, dtype = torch.long)
+        mfcc = torch.tensor(mfcc, dtype=torch.float32)
+        label = torch.tensor(label, dtype=torch.long)
 
         return mfcc, label
