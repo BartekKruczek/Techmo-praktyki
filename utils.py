@@ -2,8 +2,10 @@ import os
 import pandas as pd
 import numpy as np
 import torch
+import torch.nn.functional as F
 
 from torch.utils.data import SubsetRandomSampler
+from torch.utils.data import DataLoader
 
 class UtilsHandler:
     def __init__(self, data_path: str):
@@ -103,9 +105,25 @@ class UtilsHandler:
         val_sampler = SubsetRandomSampler(val_indices)
         test_sampler = SubsetRandomSampler(test_indices)
 
-        train_loader = torch.utils.data.DataLoader(data_loader, batch_size=32, sampler=train_sampler)
-        val_loader = torch.utils.data.DataLoader(data_loader, batch_size=32, sampler=val_sampler)
-        test_loader = torch.utils.data.DataLoader(data_loader, batch_size=32, sampler=test_sampler)
+        train_loader = DataLoader(data_loader, batch_size=32, sampler=train_sampler, collate_fn=self.padd_input)
+        val_loader = DataLoader(data_loader, batch_size=32, sampler=val_sampler, collate_fn=self.padd_input)
+        test_loader = DataLoader(data_loader, batch_size=32, sampler=test_sampler, collate_fn=self.padd_input)
 
         return train_loader, val_loader, test_loader
+    
+    def padd_input(self, batch):
+        max_len = max([x.shape[1] for x, _ in batch])
+
+        padded_batch = []
+        for x, label in batch:
+            if x.shape[1] < max_len:
+                pad_width = max_len - x.shape[1]
+                x = F.pad(x, (0, pad_width), 'constant', 0)
+            padded_batch.append((x, label))
+
+        inputs, labels = zip(*padded_batch)
+        inputs = torch.stack(inputs)
+        labels = torch.tensor(labels)
+
+        return inputs, labels
 

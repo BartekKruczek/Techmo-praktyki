@@ -1,25 +1,27 @@
 import torch
+import torch.nn as nn
+import torch.optim as optim
 
 class TrainHandler():
     def __init__(self, model, train_set, valid_set, test_set) -> None:
         self.model = model
-        self.train_set = train_set
-        self.valid_set = valid_set
-        self.test_set = test_set
+        self.train_loader = train_set
+        self.valid_loader = valid_set
+        self.test_loader = test_set
         self.learning_rate = 0.001
         self.num_epochs = 10
 
     def __repr__(self) -> str:
         return "Klasa odpowiedzialna za trenowanie modelu"
-    
+
     def train(self):
-        criterion = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
 
         for epoch in range(self.num_epochs):
             self.model.train()
             running_loss = 0.0
-            for i, data in enumerate(self.train_set, 0):
+            for i, data in enumerate(self.train_loader, 0):
                 inputs, labels = data
 
                 # Reshape the inputs to add the channel dimension (batch_size, 1, height, width)
@@ -45,7 +47,7 @@ class TrainHandler():
             correct = 0
             total = 0
             with torch.no_grad():
-                for data in self.valid_set:
+                for data in self.val_loader:
                     inputs, labels = data
                     inputs = inputs.unsqueeze(1)
                     outputs = self.model(inputs)
@@ -62,7 +64,7 @@ class TrainHandler():
         correct = 0
         total = 0
         with torch.no_grad():
-            for data in self.test_set:
+            for data in self.test_loader:
                 inputs, labels = data
                 inputs = inputs.unsqueeze(1)
                 outputs = self.model(inputs)
