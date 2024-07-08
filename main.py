@@ -22,8 +22,7 @@ def main():
     if excel_creation:
         my_utils.excel_creator(my_utils.combined_language_pd())
 
-    # dataframe from excel section
-    dataframe = my_utils.dataframe_from_excel("updated_combined_languages.xlsx")
+    dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
 
     # dataloader section
     my_dataloader = DataLoaderHandler(dataframe = dataframe)

@@ -18,23 +18,6 @@ class TrainHandler():
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
 
-        print(self.X_train)
-        print(self.X_test)
-        print(self.y_train)
-        print(self.y_test)
-
-        if type(self.X_train) != torch.Tensor:
-            self.X_train = torch.tensor(self.X_train)
-
-        if type(self.X_test) != torch.Tensor:
-            self.X_test = torch.tensor(self.X_test)
-
-        if type(self.y_train) != torch.Tensor:
-            self.y_train = torch.tensor(self.y_train)
-
-        if type(self.y_test) != torch.Tensor:
-            self.y_test = torch.tensor(self.y_test)
-
         for epoch in range(self.num_epochs):
             self.model.train()
             optimizer.zero_grad()
