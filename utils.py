@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import numpy as np
+import librosa
+import ast
 
 class UtilsHandler:
     def __init__(self, data_path: str):
@@ -101,4 +103,32 @@ class UtilsHandler:
         # labeling data, 0 - healthy, 1 - pathological, find healthy_status column, create new column with labels
         data = pd.read_excel(excel_file)
         data['label'] = np.where(data['healthy_status'] == 'healthy', 0, 1)
+
+        # iterate over rows and check if there are any None values in the MFCC column, if so, drop the row
+        for index, row in data.iterrows():
+            if row['MFCC'] == None:
+                data.drop(index, inplace=True)
+
         return data
+    
+    def pad_or_truncate(mfcc, target_length=173):
+        if len(mfcc) >= target_length:
+            return mfcc[:target_length]
+        else:
+            return np.pad(mfcc, ((0, 0), (0, target_length - len(mfcc))), mode='constant')
+
+    def debugging_sets(self, X_train, X_test, y_train, y_test) -> None:
+        print(f"X_train type: {type(X_train)}")
+        print(f"X_train shape: {X_train.shape}")
+        print(f"y_train type: {type(y_train)}")
+        print(f"y_train shape: {y_train.shape}")
+        print(f"X_test type: {type(X_test)}")
+        print(f"X_test shape: {X_test.shape}")
+        print(f"y_test type: {type(y_test)}")
+        print(f"y_test shape: {y_test.shape}")
+
+    def mfcc_debugger(self, X_train, X_test) -> None:
+        print(f"X_train type: {type(X_train)}")
+        print(f"X_train shape: {X_train.shape}")
+        print(f"X_test type: {type(X_test)}")
+        print(f"X_test shape: {X_test.shape}")
