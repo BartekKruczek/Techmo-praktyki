@@ -1,5 +1,10 @@
 # Techmo-praktyki
 
+## To do:
+- dodać automatyczną optymalizację hiperparametrów w stylu grid search/ random search/ bayesian optimization
+- upewnić się na 110% z rozkładem płci i mówców w zbiorach treningowych, walidacyjnych i testowych
+- dodac zbieranie danych z treningu do wizualizacji
+
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)
 - [Mobile device Parkinson](https://zenodo.org/records/2867216#.XeTbN59R2BZ)

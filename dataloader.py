@@ -1,12 +1,12 @@
 import pandas as pd
 import librosa
 import torch
-import numpy as np
-from torch.utils.data import Dataset, SubsetRandomSampler
+from torch.utils.data import Dataset
 
 class DataLoaderHandler(Dataset):
-    def __init__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+    def __init__(self, dataframe: pd.DataFrame, device: torch.device) -> None:
         self.dataframe = dataframe
+        self.device = device
 
     def __repr__(self) -> str:
         return "Klasa do ładowania danych, podejście 2.0"
@@ -32,11 +32,15 @@ class DataLoaderHandler(Dataset):
         label = dataframe.iloc[idx]['healthy_status']
 
         # load audio file, extract MFCC features
-        y, sr = librosa.load(audio_path)
-        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+        try:
+            y, sr = librosa.load(audio_path)
+            mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return self.__getitem__((idx + 1) % len(self))
 
         # convert to tensor
-        mfcc = torch.tensor(mfcc, dtype=torch.float32)
-        label = torch.tensor(label, dtype=torch.long)
+        mfcc = torch.tensor(mfcc, dtype=torch.float32).to(self.device)
+        label = torch.tensor(label, dtype=torch.long).to(self.device)
 
         return mfcc, label

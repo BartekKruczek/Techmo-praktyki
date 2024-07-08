@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -21,7 +20,7 @@ class Model(nn.Module):
 
         # Dynamically update the input features for the fully connected layer
         if self.fc1.in_features != x.size(1):
-            self.fc1 = nn.Linear(x.size(1), 128)
+            self.fc1 = nn.Linear(x.size(1), 128).to(x.device)
 
         x = F.relu(self.fc1(x))
         x = self.fc2(x)

@@ -1,3 +1,6 @@
+import warnings
+import torch
+
 from data import DataHandler
 from utils import UtilsHandler
 from dataloader import DataLoaderHandler
@@ -5,6 +8,17 @@ from model import Model
 from train import TrainHandler
 
 def main():
+    case = 2
+    if case == 1:
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "mps")
+        print(f"Device: {device}")
+    else:
+        device = torch.device("cpu")
+        print(f"Device: {device}")
+    
+    # ignore warnings
+    warnings.filterwarnings("ignore")
+
     my_data = DataHandler("Database")
     my_utils = UtilsHandler("Database")
 
@@ -24,8 +38,8 @@ def main():
     print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
 
     # dataloader section
-    data_loader = DataLoaderHandler(dataframe)
-    print(data_loader.__len__())
+    data_loader = DataLoaderHandler(dataframe, device)
+    print(f"Len dataloader {data_loader.__len__()}")
 
     train_loader, val_loader, test_loader = my_utils.split_dataset(data_loader)
 
@@ -34,9 +48,11 @@ def main():
     print(f"Test set size: {len(test_loader)}")
 
     # training section
-    model = Model()
-    train_handler = TrainHandler(model=model, train_set=train_loader, valid_set=val_loader, test_set=test_loader)
-    train_handler.train()
+    do_train = False
+    if do_train:
+        model = Model()
+        train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device)
+        train_handler.train()
 
 if __name__ == '__main__':
     main()
