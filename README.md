@@ -6,6 +6,7 @@
 - ~~dodac zbieranie danych z treningu do wizualizacji -> tensorboard~~
 - kfold validacja
 - augmentacja danych
+- histogram długości plików
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)
