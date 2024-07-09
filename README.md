@@ -3,7 +3,7 @@
 ## To do:
 - ~~dodać automatyczną optymalizację hiperparametrów w stylu grid search/ random search/ bayesian optimization~~
 - upewnić się na 110% z rozkładem płci i mówców w zbiorach treningowych, walidacyjnych i testowych
-- dodac zbieranie danych z treningu do wizualizacji
+- ~~dodac zbieranie danych z treningu do wizualizacji -> tensorboard~~
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)
