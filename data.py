@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import pandas as pd
+import librosa
 
 class DataHandler:
     def __init__(self, data_path: str) -> None:
@@ -167,4 +168,26 @@ class DataHandler:
         plt.close()
 
     def audio_files_length_histogram(self, dataframe: pd.DataFrame) -> plt.figure:
-        pass
+        file_paths = dataframe['file_path']
+
+        # get audio files length
+        audio_files_length = []
+        corrupted_files_count = 0
+
+        for file_path in file_paths:
+            try:
+                audio, _ = librosa.load(file_path)
+                audio_files_length.append(len(audio))
+            except:
+                corrupted_files_count += 1
+
+        # histogram
+        plt.figure(figsize=(10, 7))
+        plt.hist(audio_files_length, bins=50, color='blue', alpha=0.7)
+        plt.xlabel('Audio file length')
+        plt.ylabel('Count')
+        plt.title('Audio files length histogram')
+        plt.tight_layout()
+        
+        plt.savefig('./png/audio_files_length_histogram.png')
+        plt.close()

@@ -23,21 +23,22 @@ def objective(trial):
     my_data = DataHandler("Database")
     my_utils = UtilsHandler("Database")
 
+    dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
+    print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
+    print(f"Dataframe head: {dataframe.head()}")
+
     # data section
-    create_excel: bool = True
+    create_excel: bool = False
     if create_excel:
         combined_df = my_utils.combined_language_pd()
         my_utils.excel_creator(combined_df)
 
-    create_png: bool = True
+    create_png: bool = False
     if create_png:
         languages = my_data.all_languages_counter()
         my_data.plot_statistics(languages)
         my_data.gender_statistic_png()
-
-    dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
-    print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
-    print(f"Dataframe head: {dataframe.head()}")
+        my_data.audio_files_length_histogram(dataframe)
 
     # dataloader section
     data_loader = DataLoaderHandler(dataframe, device)
