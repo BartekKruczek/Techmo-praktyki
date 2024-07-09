@@ -165,3 +165,6 @@ class DataHandler:
         # Save the figure
         plt.savefig('./png/gender_statistics.png')
         plt.close()
+
+    def audio_files_length_histogram(self, dataframe: pd.DataFrame) -> plt.figure:
+        pass
