@@ -1,5 +1,6 @@
 import warnings
 import torch
+import optuna
 
 from data import DataHandler
 from utils import UtilsHandler
@@ -7,7 +8,7 @@ from dataloader import DataLoaderHandler
 from model import Model
 from train import TrainHandler
 
-def main():
+def objective(trial):
     case = 2
     if case == 1:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "mps")
@@ -22,18 +23,6 @@ def main():
     my_data = DataHandler("Database")
     my_utils = UtilsHandler("Database")
 
-    # pre-processing section
-    pre_processing = False
-    if pre_processing:
-        print(f"Total of gathered sample: {my_data.all_languages_counter()}")
-        my_data.plot_statistics(my_data.all_languages_counter())
-        print(my_utils.combined_language_pd().head())
-
-    # excel creation section
-    excel_creation = False
-    if excel_creation:
-        my_utils.excel_creator(my_utils.combined_language_pd())
-
     dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
     print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
 
@@ -47,12 +36,21 @@ def main():
     print(f"Validation set size: {len(val_loader)}")
     print(f"Test set size: {len(test_loader)}")
 
-    # training section
-    do_train = False
-    if do_train:
-        model = Model()
-        train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device)
-        train_handler.train()
+    # tuning hyperparameters
+    learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
+    num_epochs = trial.suggest_int("num_epochs", 5, 50)
+    step_size = trial.suggest_int("step_size", 1, 20)
+    gamma = trial.suggest_float("gamma", 0.1, 0.9)
+    l1_lambda = trial.suggest_float("l1_lambda", 1e-5, 1e-2, log=True)
+    l2_lambda = trial.suggest_float("l2_lambda", 1e-5, 1e-2, log=True)
+
+    model = Model()
+    train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
+    accuracy = train_handler.train()
+    return accuracy
 
 if __name__ == '__main__':
-    main()
+    study = optuna.create_study(direction="maximize")
+    study.optimize(objective, n_trials=100)
+    print(f"Best trial: {study.best_trial.value}")
+    print(f"Best parameters: {study.best_params}")

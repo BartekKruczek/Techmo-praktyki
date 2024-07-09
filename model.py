@@ -8,7 +8,6 @@ class Model(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         
-        # Use a placeholder for input features, will be updated in forward method
         self.fc1 = nn.Linear(64 * 13 * 13, 128)
         self.fc2 = nn.Linear(128, 2)
         self.sigmoid = nn.Sigmoid()
@@ -18,7 +17,6 @@ class Model(nn.Module):
         x = self.pool(F.relu(self.conv2(x)))
         x = x.view(x.size(0), -1)
 
-        # Dynamically update the input features for the fully connected layer
         if self.fc1.in_features != x.size(1):
             self.fc1 = nn.Linear(x.size(1), 128).to(x.device)
 
