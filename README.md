@@ -1,7 +1,7 @@
 # Techmo-praktyki
 
 ## To do:
-- dodać automatyczną optymalizację hiperparametrów w stylu grid search/ random search/ bayesian optimization
+- ~~dodać automatyczną optymalizację hiperparametrów w stylu grid search/ random search/ bayesian optimization~~
 - upewnić się na 110% z rozkładem płci i mówców w zbiorach treningowych, walidacyjnych i testowych
 - dodac zbieranie danych z treningu do wizualizacji
 

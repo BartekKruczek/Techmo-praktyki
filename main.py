@@ -38,16 +38,20 @@ def objective(trial):
 
     # tuning hyperparameters
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
-    num_epochs = trial.suggest_int("num_epochs", 5, 50)
+    # num_epochs = trial.suggest_int("num_epochs", 5, 50)
     step_size = trial.suggest_int("step_size", 1, 20)
     gamma = trial.suggest_float("gamma", 0.1, 0.9)
     l1_lambda = trial.suggest_float("l1_lambda", 1e-5, 1e-2, log=True)
     l2_lambda = trial.suggest_float("l2_lambda", 1e-5, 1e-2, log=True)
 
-    model = Model()
-    train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
-    accuracy = train_handler.train()
-    return accuracy
+    num_epochs = 5
+
+    do_train = True
+    if do_train:
+        model = Model()
+        train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
+        accuracy = train_handler.train()
+        return accuracy
 
 if __name__ == '__main__':
     study = optuna.create_study(direction="maximize")

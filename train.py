@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from tqdm import tqdm
+from torch.utils.tensorboard import SummaryWriter
 
 class TrainHandler():
     def __init__(self, model, train_set, valid_set, test_set, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda) -> None:
@@ -17,6 +18,7 @@ class TrainHandler():
         self.gamma = gamma
         self.l1_lambda = l1_lambda
         self.l2_lambda = l2_lambda
+        self.writer = SummaryWriter('runs/experiment1')
 
     def __repr__(self) -> str:
         return "Klasa odpowiedzialna za trenowanie modelu"
@@ -52,22 +54,30 @@ class TrainHandler():
                     tqdm.write(f"[{epoch + 1}, {i + 1}] loss: {running_loss / 10:.3f}")
                     running_loss = 0.0
 
+            self.writer.add_scalar('training_loss', running_loss / len(self.train_loader), epoch)
+
             scheduler.step()
 
             self.model.eval()
             correct = 0
             total = 0
+            validation_loss = 0.0
             with torch.no_grad():
                 for data in self.valid_loader:
                     inputs, labels = data
                     inputs, labels = inputs.to(self.device), labels.to(self.device)
                     inputs = inputs.unsqueeze(1)
                     outputs = self.model(inputs)
+                    loss = criterion(outputs, labels)
+                    validation_loss += loss.item()
                     _, predicted = torch.max(outputs.data, 1)
                     total += labels.size(0)
                     correct += (predicted == labels).sum().item()
 
-            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {100 * correct / total:.2f}%")
+            validation_accuracy = 100 * correct / total
+            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy:.2f}%")
+            self.writer.add_scalar('validation_loss', validation_loss / len(self.valid_loader), epoch)
+            self.writer.add_scalar('validation_accuracy', validation_accuracy, epoch)
 
         tqdm.write("Finished Training")
 
@@ -81,10 +91,17 @@ class TrainHandler():
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 inputs = inputs.unsqueeze(1)
                 outputs = self.model(inputs)
+                loss = criterion(outputs, labels)
+                test_loss += loss.item()
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
 
         test_accuracy = 100 * correct / total
+        test_loss = test_loss / len(self.test_loader)
         tqdm.write(f"Test Accuracy: {test_accuracy:.2f}%")
+        self.writer.add_scalar('test_loss', test_loss, epoch)
+        self.writer.add_scalar('test_accuracy', test_accuracy, epoch)
+
+        self.writer.close()
         return test_accuracy
