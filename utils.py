@@ -25,7 +25,7 @@ class UtilsHandler:
                                 for file in file_files:
                                     if file.endswith(".wav"):
                                         file_path = os.path.join(file_root, file)
-                                        data.append((file_path, "Czech", "healthy"))
+                                        data.append((file_path, "Czech", "healthy", "child"))
                 elif dir == "Patients":
                     for subroot, subdirs, subfiles in os.walk(os.path.join(root, dir)):
                         for subdir in subdirs:
@@ -33,27 +33,42 @@ class UtilsHandler:
                                 for file in file_files:
                                     if file.endswith(".wav"):
                                         file_path = os.path.join(file_root, file)
-                                        data.append((file_path, "Czech", "pathological"))
-        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status'])
+                                        data.append((file_path, "Czech", "pathological", "child"))
+        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender'])
 
     def english_language_pd(self) -> pd.DataFrame:
         data = []
         for root, dirs1, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria')):
             for dir1 in dirs1:
-                for root, dirs2, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1)):
-                    for dir2 in dirs2:
-                        for root, dirs3, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2)):
-                            for dir3 in dirs3:
-                                if dir3 == "Session1" or dir3 == "Session2" or dir3 == "Session3":
-                                    for root, dirs4, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2, dir3)):
-                                        for dir4 in dirs4:
-                                            if dir4 == "wav_arrayMic" or dir4 == "wav_headMic":
-                                                for root, dirs5, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2, dir3, dir4)):
-                                                    for file in files:
-                                                        if file.endswith(".wav"):
-                                                            file_path = os.path.join(root, file)
-                                                            data.append((file_path, "English", "pathological"))
-        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status'])
+                if dir1 == "F":
+                    for root, dirs2, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1)):
+                        for dir2 in dirs2:
+                            for root, dirs3, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2)):
+                                for dir3 in dirs3:
+                                    if dir3 == "Session1" or dir3 == "Session2" or dir3 == "Session3":
+                                        for root, dirs4, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2, dir3)):
+                                            for dir4 in dirs4:
+                                                if dir4 == "wav_arrayMic" or dir4 == "wav_headMic":
+                                                    for root, dirs5, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2, dir3, dir4)):
+                                                        for file in files:
+                                                            if file.endswith(".wav"):
+                                                                file_path = os.path.join(root, file)
+                                                                data.append((file_path, "English", "pathological", "female"))
+                elif dir1 == "M":
+                    for root, dirs2, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1)):
+                        for dir2 in dirs2:
+                            for root, dirs3, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2)):
+                                for dir3 in dirs3:
+                                    if dir3 == "Session1" or dir3 == "Session2" or dir3 == "Session3" or dir3 == "Session2_3":
+                                        for root, dirs4, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2, dir3)):
+                                            for dir4 in dirs4:
+                                                if dir4 == "wav_arrayMic" or dir4 == "wav_headMic":
+                                                    for root, dirs5, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1, dir2, dir3, dir4)):
+                                                        for file in files:
+                                                            if file.endswith(".wav"):
+                                                                file_path = os.path.join(root, file)
+                                                                data.append((file_path, "English", "pathological", "male"))
+        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender'])
 
     def german_language_pd(self) -> pd.DataFrame:
         data = []
@@ -64,20 +79,34 @@ class UtilsHandler:
                         if dir2 == "Healthy":
                             for subroot, subdirs, subfiles in os.walk(os.path.join(root, dir2)):
                                 for subdir in subdirs:
-                                    for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
-                                        for file in file_files:
-                                            if file.endswith(".wav"):
-                                                file_path = os.path.join(file_root, file)
-                                                data.append((file_path, "German", "healthy"))
+                                    if subdir == "F":
+                                        for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
+                                            for file in file_files:
+                                                if file.endswith(".wav"):
+                                                    file_path = os.path.join(file_root, file)
+                                                    data.append((file_path, "German", "healthy", "female"))
+                                    elif subdir == "M":
+                                        for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
+                                            for file in file_files:
+                                                if file.endswith(".wav"):
+                                                    file_path = os.path.join(file_root, file)
+                                                    data.append((file_path, "German", "healthy", "male"))
                         elif dir2 == "Pathological":
                             for subroot, subdirs, subfiles in os.walk(os.path.join(root, dir2)):
                                 for subdir in subdirs:
-                                    for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
-                                        for file in file_files:
-                                            if file.endswith(".wav"):
-                                                file_path = os.path.join(file_root, file)
-                                                data.append((file_path, "German", "pathological"))
-        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status'])
+                                    if subdir == "F":
+                                        for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
+                                            for file in file_files:
+                                                if file.endswith(".wav"):
+                                                    file_path = os.path.join(file_root, file)
+                                                    data.append((file_path, "German", "pathological", "female"))
+                                    elif subdir == "M":
+                                        for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
+                                            for file in file_files:
+                                                if file.endswith(".wav"):
+                                                    file_path = os.path.join(file_root, file)
+                                                    data.append((file_path, "German", "pathological", "male"))
+        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender'])
 
     def combined_language_pd(self) -> pd.DataFrame:
         czech_df = self.czech_language_pd()

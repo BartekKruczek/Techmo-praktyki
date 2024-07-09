@@ -28,7 +28,7 @@ class TrainHandler():
         optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=self.l2_lambda)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=self.step_size, gamma=self.gamma)
 
-        for epoch in range(self.num_epochs):
+        for epoch in tqdm(range(self.num_epochs)):
             self.model.train()
             running_loss = 0.0
             for i, data in enumerate(tqdm(self.train_loader), 0):
@@ -51,7 +51,7 @@ class TrainHandler():
 
                 running_loss += loss.item()
                 if i % 10 == 9:
-                    tqdm.write(f"[{epoch + 1}, {i + 1}] loss: {running_loss / 10:.3f}")
+                    # tqdm.write(f"[{epoch + 1}, {i + 1}] loss: {running_loss / 10:.3f}")
                     running_loss = 0.0
 
             self.writer.add_scalar('training_loss', running_loss / len(self.train_loader), epoch)
@@ -63,7 +63,7 @@ class TrainHandler():
             total = 0
             validation_loss = 0.0
             with torch.no_grad():
-                for data in self.valid_loader:
+                for data in tqdm(self.valid_loader):
                     inputs, labels = data
                     inputs, labels = inputs.to(self.device), labels.to(self.device)
                     inputs = inputs.unsqueeze(1)
@@ -85,8 +85,9 @@ class TrainHandler():
         self.model.eval()
         correct = 0
         total = 0
+        test_loss = 0.0
         with torch.no_grad():
-            for data in self.test_loader:
+            for data in tqdm(self.test_loader):
                 inputs, labels = data
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 inputs = inputs.unsqueeze(1)

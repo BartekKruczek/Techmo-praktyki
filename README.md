@@ -7,6 +7,8 @@
 - kfold validacja
 - augmentacja danych
 - histogram długości plików
+- ~~dodać labele child, female i male~~
+- ~~wizualizacja płci~~
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)

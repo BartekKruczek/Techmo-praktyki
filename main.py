@@ -23,8 +23,21 @@ def objective(trial):
     my_data = DataHandler("Database")
     my_utils = UtilsHandler("Database")
 
+    # data section
+    create_excel: bool = True
+    if create_excel:
+        combined_df = my_utils.combined_language_pd()
+        my_utils.excel_creator(combined_df)
+
+    create_png: bool = True
+    if create_png:
+        languages = my_data.all_languages_counter()
+        my_data.plot_statistics(languages)
+        my_data.gender_statistic_png()
+
     dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
     print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
+    print(f"Dataframe head: {dataframe.head()}")
 
     # dataloader section
     data_loader = DataLoaderHandler(dataframe, device)
@@ -44,17 +57,19 @@ def objective(trial):
     l1_lambda = trial.suggest_float("l1_lambda", 1e-5, 1e-2, log=True)
     l2_lambda = trial.suggest_float("l2_lambda", 1e-5, 1e-2, log=True)
 
-    num_epochs = 5
+    num_epochs: int = 5
 
-    do_train = True
+    do_train: bool = False
     if do_train:
         model = Model()
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
         accuracy = train_handler.train()
         return accuracy
+    else:
+        return 0.0
 
 if __name__ == '__main__':
     study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=100)
+    study.optimize(objective, n_trials=1)
     print(f"Best trial: {study.best_trial.value}")
     print(f"Best parameters: {study.best_params}")

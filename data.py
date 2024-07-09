@@ -1,5 +1,6 @@
 import os
 import matplotlib.pyplot as plt
+import pandas as pd
 
 class DataHandler:
     def __init__(self, data_path: str) -> None:
@@ -141,4 +142,26 @@ class DataHandler:
         ax2.set_title('Pathological Samples Distribution')
 
         plt.savefig('./png/healthy_pathological_samples.png')
+        plt.close()
+
+    def dataframe_from_excel(self, excel_path: str) -> pd.DataFrame:
+        return pd.read_excel(excel_path)
+    
+    def gender_statistic_png(self) -> plt.figure:
+        dataframe: pd.DataFrame = self.dataframe_from_excel("combined_languages.xlsx")
+
+        # read 'gender' column
+        genders = dataframe['gender'].value_counts()
+
+        # bar plot
+        plt.figure(figsize=(10, 7))
+        plt.bar(genders.index, genders.values, color=['blue', 'pink', 'green'])
+        plt.xlabel('Gender')
+        plt.ylabel('Count')
+        plt.title('Gender Distribution, all datasets')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        
+        # Save the figure
+        plt.savefig('./png/gender_statistics.png')
         plt.close()
