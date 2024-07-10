@@ -3,6 +3,7 @@ import torch
 import torchaudio
 
 from torch.utils.data import Dataset
+from torch.nn import functional as F
 
 class DataLoaderHandler(Dataset):
     def __init__(self, dataframe: pd.DataFrame, device: torch.device) -> None:
@@ -32,7 +33,7 @@ class DataLoaderHandler(Dataset):
         audio_path = dataframe.iloc[idx]['file_path']
         label = dataframe.iloc[idx]['healthy_status']
 
-        # load audio file, extract MFCC features
+        # load audio file, extract mel spectrogram
         try:
             y, sr = torchaudio.load(audio_path, normalize = True)
             transform = torchaudio.transforms.MelSpectrogram(sample_rate = sr)
@@ -46,3 +47,30 @@ class DataLoaderHandler(Dataset):
         label = torch.tensor(label, dtype=torch.long).to(self.device)
 
         return mel_spectrogram, label
+    
+    def apply_random_augmentation(self, audio: torch.Tensor) -> torch.Tensor:
+        # randomly select augmentation
+        augmentations = [self.add_noise, self.add_shift, self.add_stretch]
+        augmentation = augmentations[torch.randint(0, len(augmentations), (1,)).item()]
+
+        return augmentation(audio)
+
+    def add_noise(self, audio: torch.Tensor) -> torch.Tensor:
+        noise_factor = 0.005
+
+        noise = torch.randn(audio.size())
+        noisy_audio = audio + noise_factor * noise
+
+        return noisy_audio
+
+    def add_shift(self, audio: torch.Tensor) -> torch.Tensor:
+        shift = int(audio.size(1) * 0.1)
+
+        return torch.roll(audio, shifts=shift, dims=1)
+    
+    def add_stretch(self, audio: torch.Tensor) -> torch.Tensor:
+        stretch_factor = 1.2
+        stretch_length = int(audio.size(1) * stretch_factor)
+        stretched_audio = F.interpolate(audio.unsqueeze(0), size=(stretch_length,), mode='nearest').squeeze(0)
+
+        return stretched_audio
