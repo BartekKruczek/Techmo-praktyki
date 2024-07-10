@@ -60,7 +60,7 @@ def objective(trial):
 
     num_epochs: int = 5
 
-    do_train: bool = False
+    do_train: bool = True
     if do_train:
         model = Model()
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)

@@ -6,6 +6,7 @@ import torch.nn.functional as F
 
 from torch.utils.data import SubsetRandomSampler
 from torch.utils.data import DataLoader
+from torch.nn.utils.rnn import pad_sequence
 
 class UtilsHandler:
     def __init__(self, data_path: str):
@@ -141,18 +142,17 @@ class UtilsHandler:
         return train_loader, val_loader, test_loader
     
     def padd_input(self, batch):
-        max_len = max([x.shape[1] for x, _ in batch])
+        inputs, labels = zip(*batch)
 
-        padded_batch = []
-        for x, label in batch:
-            if x.shape[1] < max_len:
-                pad_width = max_len - x.shape[1]
-                x = F.pad(x, (0, pad_width), 'constant', 0)
-            padded_batch.append((x, label))
+        max_len = max([x.shape[-1] for x in inputs])
 
-        inputs, labels = zip(*padded_batch)
-        inputs = torch.stack(inputs)
+        inputs_padded = [F.pad(x, (0, max_len - x.shape[-1]), 'constant', 0) for x in inputs]
+        inputs_padded = torch.stack(inputs_padded)
+
+        # usuwanie dodatkowej wymiarowości
+        inputs_padded = inputs_padded.squeeze(1)
+
         labels = torch.tensor(labels)
 
-        return inputs, labels
+        return inputs_padded, labels
 

@@ -10,6 +10,7 @@
 - ~~dodać labele child, female i male~~
 - ~~wizualizacja płci~~
 - cos sie dzieje z ilosciami plikow, jak dodalem sprawdzanie plci to spadlo z 50k na 30k -> sprawdzic dlaczego
+- ~~zamienic mfcc na mel spectrogram~~
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)

@@ -1,6 +1,7 @@
 import pandas as pd
-import librosa
 import torch
+import torchaudio
+
 from torch.utils.data import Dataset
 
 class DataLoaderHandler(Dataset):
@@ -33,14 +34,15 @@ class DataLoaderHandler(Dataset):
 
         # load audio file, extract MFCC features
         try:
-            y, sr = librosa.load(audio_path)
-            mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+            y, sr = torchaudio.load(audio_path, normalize = True)
+            transform = torchaudio.transforms.MelSpectrogram(sample_rate = sr)
+            mel_spectrogram = transform(y)
         except Exception as e:
             print(f"Error loading {audio_path}: {e}")
             return self.__getitem__((idx + 1) % len(self))
 
-        # convert to tensor
-        mfcc = torch.tensor(mfcc, dtype=torch.float32).to(self.device)
+        # convert to tensor, send to device
+        mel_spectrogram = mel_spectrogram.to(self.device)
         label = torch.tensor(label, dtype=torch.long).to(self.device)
 
-        return mfcc, label
+        return mel_spectrogram, label
