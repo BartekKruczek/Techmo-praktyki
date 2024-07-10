@@ -5,7 +5,7 @@
 - upewnić się na 110% z rozkładem płci i mówców w zbiorach treningowych, walidacyjnych i testowych
 - ~~dodac zbieranie danych z treningu do wizualizacji -> tensorboard~~
 - kfold validacja
-- augmentacja danych
+- ~~augmentacja danych -> tylko dla zbioru treningowego~~
 - ~~histogram długości plików~~
 - ~~dodać labele child, female i male~~
 - ~~wizualizacja płci~~

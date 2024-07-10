@@ -6,9 +6,10 @@ from torch.utils.data import Dataset
 from torch.nn import functional as F
 
 class DataLoaderHandler(Dataset):
-    def __init__(self, dataframe: pd.DataFrame, device: torch.device) -> None:
+    def __init__(self, dataframe: pd.DataFrame, device: torch.device, augmentation: bool) -> None:
         self.dataframe = dataframe
         self.device = device
+        self.augmentation = augmentation
 
     def __repr__(self) -> str:
         return "Klasa do ładowania danych, podejście 2.0"
@@ -36,6 +37,10 @@ class DataLoaderHandler(Dataset):
         # load audio file, extract mel spectrogram
         try:
             y, sr = torchaudio.load(audio_path, normalize = True)
+
+            if self.augmentation:
+                y = self.apply_random_augmentation(y)
+
             transform = torchaudio.transforms.MelSpectrogram(sample_rate = sr)
             mel_spectrogram = transform(y)
         except Exception as e:

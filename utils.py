@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from torch.utils.data import SubsetRandomSampler
 from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
+from dataloader import DataLoaderHandler
 
 class UtilsHandler:
     def __init__(self, data_path: str):
@@ -123,8 +124,8 @@ class UtilsHandler:
     def dataframe_from_excel(self, excel_file: str) -> pd.DataFrame:
         return pd.read_excel(excel_file)
     
-    def split_dataset(self, data_loader: torch.utils.data.DataLoader):
-        dataset_size = len(data_loader)
+    def split_dataset(self, dataframe: pd.DataFrame, device: torch.device):
+        dataset_size = len(dataframe)
         indices = list(range(dataset_size))
         split1 = int(np.floor(0.6 * dataset_size))
         split2 = int(np.floor(0.8 * dataset_size))
@@ -135,9 +136,9 @@ class UtilsHandler:
         val_sampler = SubsetRandomSampler(val_indices)
         test_sampler = SubsetRandomSampler(test_indices)
 
-        train_loader = DataLoader(data_loader, batch_size=32, sampler=train_sampler, collate_fn=self.padd_input)
-        val_loader = DataLoader(data_loader, batch_size=32, sampler=val_sampler, collate_fn=self.padd_input)
-        test_loader = DataLoader(data_loader, batch_size=32, sampler=test_sampler, collate_fn=self.padd_input)
+        train_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=True), batch_size=32, sampler=train_sampler, collate_fn=self.padd_input)
+        val_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=False), batch_size=32, sampler=val_sampler, collate_fn=self.padd_input)
+        test_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=False), batch_size=32, sampler=test_sampler, collate_fn=self.padd_input)
 
         return train_loader, val_loader, test_loader
     

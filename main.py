@@ -4,7 +4,6 @@ import optuna
 
 from data import DataHandler
 from utils import UtilsHandler
-from dataloader import DataLoaderHandler
 from model import Model
 from train import TrainHandler
 
@@ -41,14 +40,11 @@ def objective(trial):
         my_data.audio_files_length_histogram(dataframe)
 
     # dataloader section
-    data_loader = DataLoaderHandler(dataframe, device)
-    print(f"Len dataloader {data_loader.__len__()}")
+    train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
 
-    train_loader, val_loader, test_loader = my_utils.split_dataset(data_loader)
-
-    print(f"Train set size: {len(train_loader)}")
-    print(f"Validation set size: {len(val_loader)}")
-    print(f"Test set size: {len(test_loader)}")
+    print(f"Train set size: {len(train_loader.dataset)}")
+    print(f"Validation set size: {len(val_loader.dataset)}")
+    print(f"Test set size: {len(test_loader.dataset)}")
 
     # tuning hyperparameters
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
@@ -74,3 +70,4 @@ if __name__ == '__main__':
     study.optimize(objective, n_trials=1)
     print(f"Best trial: {study.best_trial.value}")
     print(f"Best parameters: {study.best_params}")
+
