@@ -8,8 +8,7 @@ from torch.utils.data import SubsetRandomSampler
 from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 from dataloader import DataLoaderHandler
-from sklearn.model_selection import train_test_split
-
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 class UtilsHandler:
     def __init__(self, data_path: str):
         self.data_path = data_path
@@ -176,7 +175,10 @@ class UtilsHandler:
 
         return train_loader, val_loader, test_loader
     
-    def train_test_split(self, dataframe: pd.DataFrame, device: torch.device):
+    def split_dataset_stratified(self, dataframe: pd.DataFrame, device: torch.device):
+        pass
+    
+    def train_test_split(self, dataframe: pd.DataFrame):
         train_df, test_df = train_test_split(dataframe, test_size=0.2, random_state=42)
         return train_df, test_df
     
