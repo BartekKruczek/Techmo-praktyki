@@ -12,6 +12,7 @@
 - ~~wizualizacja płci~~
 - ~~cos sie dzieje z ilosciami plikow, jak dodalem sprawdzanie plci to spadlo z 50k na 30k -> jest ok~~
 - ~~zamienic mfcc na mel spectrogram~~
+- ~~zaktualizowac sciezki do bazy danych -> nowy korpus ang.~~
 - wziąć autoencoder, dotrenować go na naszych danych, a potem użyć go do ekstrakcji cech
 - zwiększyć liczbę klas
 - dodać metryki takie jak F1, precision, recall

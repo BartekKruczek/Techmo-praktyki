@@ -32,6 +32,7 @@ def objective(trial):
     if create_excel:
         combined_df = my_utils.combined_language_pd()
         my_utils.excel_creator(combined_df)
+        my_utils.common_voice()
 
     create_png: bool = True
     if create_png:

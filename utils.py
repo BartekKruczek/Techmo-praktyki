@@ -146,8 +146,9 @@ class UtilsHandler:
         # drop 'text', 'up_votes', 'down_votes', 'age', 'accent', 'duration' columns
         combined_df = combined_df.drop(columns = ['text', 'up_votes', 'down_votes', 'age', 'accent', 'duration'])
 
-        # rename filename to file_path
+        # rename filename to file_path, add prefix
         combined_df = combined_df.rename(columns = {'filename': 'file_path'})
+        combined_df['file_path'] = combined_df['file_path'].apply(lambda x: os.path.join('Database/Common_voice/', x))
 
         # add healthy_status column, every where healty
         combined_df['healthy_status'] = 'healthy'
