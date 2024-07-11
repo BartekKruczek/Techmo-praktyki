@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_io as tfio
+import pandas as pd
 
 class AutoFeaturesExtraction:
     def __init__(self) -> None:
@@ -14,6 +15,9 @@ class AutoFeaturesExtraction:
         yamnet_model = hub.load(yamnet_model_handle)
 
         return yamnet_model
+    
+    def get_audios_path(self, dataframe: pd.DataFrame) -> list[str]:
+        return dataframe['file_path'].values.tolist()
     
     def convert_audio_file_to_16kHz(self, file_path: str) -> float:
         file_contents = tf.io.read_file(file_path)

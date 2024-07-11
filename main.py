@@ -43,7 +43,7 @@ def objective(trial):
         my_data.gender_statistic_png()
         my_data.audio_files_length_histogram(dataframe)
 
-    my_auto_features.convert_audio_file_to_16kHz(dataframe)
+    my_auto_features.convert_audio_file_to_16kHz()
 
     # dataloader section
     data_loader = DataLoaderHandler(dataframe, device, augmentation=True)
