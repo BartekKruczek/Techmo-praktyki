@@ -3,14 +3,18 @@
 ## To do:
 - ~~dodać automatyczną optymalizację hiperparametrów w stylu grid search/ random search/ bayesian optimization~~
 - upewnić się na 110% z rozkładem płci i mówców w zbiorach treningowych, walidacyjnych i testowych
+- ~~dodać więcej języka ang. do zdrowego korpusu~~
 - ~~dodac zbieranie danych z treningu do wizualizacji -> tensorboard~~
-- kfold validacja
+- ~~kfold validacja -> pomysł porzucony, za duy nakład czasu obliczeniowego~~
 - ~~augmentacja danych -> tylko dla zbioru treningowego~~
 - ~~histogram długości plików~~
 - ~~dodać labele child, female i male~~
 - ~~wizualizacja płci~~
-- cos sie dzieje z ilosciami plikow, jak dodalem sprawdzanie plci to spadlo z 50k na 30k -> sprawdzic dlaczego
+- ~~cos sie dzieje z ilosciami plikow, jak dodalem sprawdzanie plci to spadlo z 50k na 30k -> jest ok~~
 - ~~zamienic mfcc na mel spectrogram~~
+- wziąć autoencoder, dotrenować go na naszych danych, a potem użyć go do ekstrakcji cech
+- zwiększyć liczbę klas
+- dodać metryki takie jak F1, precision, recall
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)

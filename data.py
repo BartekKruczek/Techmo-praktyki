@@ -4,8 +4,9 @@ import pandas as pd
 import librosa
 
 class DataHandler:
-    def __init__(self, data_path: str) -> None:
+    def __init__(self, data_path: str, utils: classmethod) -> None:
         self.data_path = data_path
+        self.utils = utils
 
     def __repr__(self) -> str:
         return f"Klasa do obsługi danych z folderu: {self.data_path}"
@@ -107,12 +108,50 @@ class DataHandler:
 
         return languages
     
-    def all_languages_counter(self) -> dict:
+    def common_voice_language_counter(self) -> dict:
         languages = {}
-        languages.update(self.czech_language_counter())
-        languages.update(self.english_language_counter())
-        languages.update(self.german_language_counter())
-        return languages    
+
+        # common voice df
+        df = self.utils.common_voice()
+
+        # healthy and pathological counter
+        healthy = len(df[df['healthy_status'] == 'healthy'])
+        pathological = len(df[df['healthy_status'] == 'pathological'])
+
+        if "English" not in languages:
+            languages["English"] = {"healthy": healthy, "pathological": pathological}
+        else:
+            languages["English"]["healthy"] += healthy
+
+        return languages
+    
+    def all_languages_counter(self) -> dict:
+        languages = self.czech_language_counter()
+
+        english_count = self.english_language_counter()
+        for lang, counts in english_count.items():
+            if lang in languages:
+                languages[lang]['healthy'] += counts['healthy']
+                languages[lang]['pathological'] += counts['pathological']
+            else:
+                languages[lang] = counts
+
+        german_count = self.german_language_counter()
+        for lang, counts in german_count.items():
+            if lang in languages:
+                languages[lang]['healthy'] += counts['healthy']
+                languages[lang]['pathological'] += counts['pathological']
+            else:
+                languages[lang] = counts
+
+        common_voice_count = self.common_voice_language_counter()
+        for lang, counts in common_voice_count.items():
+            if lang in languages:
+                languages[lang]['healthy'] += counts['healthy']
+            else:
+                languages[lang] = counts
+
+        return languages
 
     def plot_statistics(self, languages: dict) -> None: 
         labels = list(languages.keys())

@@ -4,6 +4,7 @@ import optuna
 
 from data import DataHandler
 from utils import UtilsHandler
+from dataloader import DataLoaderHandler
 from model import Model
 from train import TrainHandler
 
@@ -19,20 +20,20 @@ def objective(trial):
     # ignore warnings
     warnings.filterwarnings("ignore")
 
-    my_data = DataHandler("Database")
     my_utils = UtilsHandler("Database")
+    my_data = DataHandler("Database", my_utils)
 
     dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
     print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
     print(f"Dataframe head: {dataframe.head()}")
 
     # data section
-    create_excel: bool = False
+    create_excel: bool = True
     if create_excel:
         combined_df = my_utils.combined_language_pd()
         my_utils.excel_creator(combined_df)
 
-    create_png: bool = False
+    create_png: bool = True
     if create_png:
         languages = my_data.all_languages_counter()
         my_data.plot_statistics(languages)
@@ -40,11 +41,14 @@ def objective(trial):
         my_data.audio_files_length_histogram(dataframe)
 
     # dataloader section
-    train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
+    data_loader = DataLoaderHandler(dataframe, device, augmentation = True)
+    print(f"Len dataloader {data_loader.__len__()}")
 
-    print(f"Train set size: {len(train_loader.dataset)}")
-    print(f"Validation set size: {len(val_loader.dataset)}")
-    print(f"Test set size: {len(test_loader.dataset)}")
+    train_loader, val_loader, test_loader = my_utils.split_dataset(data_loader)
+
+    print(f"Train set size: {len(train_loader)}")
+    print(f"Validation set size: {len(val_loader)}")
+    print(f"Test set size: {len(test_loader)}")
 
     # tuning hyperparameters
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
@@ -56,7 +60,7 @@ def objective(trial):
 
     num_epochs: int = 5
 
-    do_train: bool = True
+    do_train: bool = False
     if do_train:
         model = Model()
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
@@ -70,4 +74,3 @@ if __name__ == '__main__':
     study.optimize(objective, n_trials=1)
     print(f"Best trial: {study.best_trial.value}")
     print(f"Best parameters: {study.best_params}")
-
