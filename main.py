@@ -26,8 +26,8 @@ def objective(trial):
     my_auto_features = AutoFeaturesExtraction()
 
     dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
-    print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
-    print(f"Dataframe head: {dataframe.head()}")
+    # print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
+    # print(f"Dataframe head: {dataframe.head()}")
 
     # data section
     create_excel: bool = False
@@ -43,7 +43,8 @@ def objective(trial):
         my_data.gender_statistic_png()
         my_data.audio_files_length_histogram(dataframe)
 
-    my_auto_features.convert_audio_file_to_16kHz()
+    my_auto_features.test()
+    # my_auto_features.get_features(dataframe)
 
     # dataloader section
     data_loader = DataLoaderHandler(dataframe, device, augmentation=True)
