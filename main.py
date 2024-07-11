@@ -45,6 +45,7 @@ def objective(trial):
     data_loader = DataLoaderHandler(dataframe, device, augmentation = True)
     print(f"Len dataloader {data_loader.__len__()}")
 
+    # podział na zbiory
     train_loader, val_loader, test_loader = my_utils.split_dataset(data_loader)
 
     print(f"Train set size: {len(train_loader)}")

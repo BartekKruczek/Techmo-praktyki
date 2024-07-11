@@ -176,7 +176,24 @@ class UtilsHandler:
         return train_loader, val_loader, test_loader
     
     def split_dataset_stratified(self, dataframe: pd.DataFrame, device: torch.device):
-        pass
+        X = dataframe['file_path']
+        y = dataframe[['healthy_status', 'language', 'gender']]
+
+        stratified_split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+        for train_index, test_index in stratified_split.split(X, y):
+            train_df, test_df = dataframe.iloc[train_index], dataframe.iloc[test_index]
+
+        # podział zbioru treningowego na treningowy i walidacyjny
+        stratified_split = StratifiedShuffleSplit(n_splits=1, test_size=0.25, random_state=42)
+        for train_index, val_index in stratified_split.split(train_df['file_path'], train_df[['healthy_status', 'language', 'gender']]):
+            train_df, val_df = train_df.iloc[train_index], train_df.iloc[val_index]
+
+        # create data loaders
+        train_loader = DataLoader(DataLoaderHandler(train_df, device, augmentation=True), batch_size=32, collate_fn=self.padd_input)
+        val_loader = DataLoader(DataLoaderHandler(val_df, device, augmentation=False), batch_size=32, collate_fn=self.padd_input)
+        test_loader = DataLoader(DataLoaderHandler(test_df, device, augmentation=False), batch_size=32, collate_fn=self.padd_input)
+
+        return train_loader, val_loader, test_loader
     
     def train_test_split(self, dataframe: pd.DataFrame):
         train_df, test_df = train_test_split(dataframe, test_size=0.2, random_state=42)
