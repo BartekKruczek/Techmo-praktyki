@@ -7,6 +7,7 @@ from utils import UtilsHandler
 from dataloader import DataLoaderHandler
 from model import Model
 from train import TrainHandler
+from auto_features_extraction import AutoFeaturesExtraction
 
 def objective(trial):
     case = 2
@@ -22,6 +23,7 @@ def objective(trial):
 
     my_utils = UtilsHandler("Database")
     my_data = DataHandler("Database", my_utils)
+    my_auto_features = AutoFeaturesExtraction()
 
     dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
     print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
@@ -40,6 +42,8 @@ def objective(trial):
         my_data.plot_statistics(languages)
         my_data.gender_statistic_png()
         my_data.audio_files_length_histogram(dataframe)
+
+    my_auto_features.convert_audio_file_to_16kHz(dataframe)
 
     # dataloader section
     data_loader = DataLoaderHandler(dataframe, device, augmentation=True)
@@ -63,7 +67,7 @@ def objective(trial):
 
     num_epochs: int = 5
 
-    do_train: bool = True
+    do_train: bool = False
     if do_train:
         model = Model()
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
