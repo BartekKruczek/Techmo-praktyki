@@ -28,13 +28,13 @@ def objective(trial):
     print(f"Dataframe head: {dataframe.head()}")
 
     # data section
-    create_excel: bool = True
+    create_excel: bool = False
     if create_excel:
         combined_df = my_utils.combined_language_pd()
         my_utils.excel_creator(combined_df)
         my_utils.common_voice()
 
-    create_png: bool = True
+    create_png: bool = False
     if create_png:
         languages = my_data.all_languages_counter()
         my_data.plot_statistics(languages)
@@ -42,15 +42,16 @@ def objective(trial):
         my_data.audio_files_length_histogram(dataframe)
 
     # dataloader section
-    data_loader = DataLoaderHandler(dataframe, device, augmentation = True)
+    data_loader = DataLoaderHandler(dataframe, device, augmentation=True)
     print(f"Len dataloader {data_loader.__len__()}")
 
     # podział na zbiory
-    train_loader, val_loader, test_loader = my_utils.split_dataset(data_loader)
+    # train_loader, val_loader, test_loader = my_utils.split_dataset(data_loader, device)
+    train_loader, val_loader, test_loader = my_utils.split_dataset_stratified(dataframe, device)
 
-    print(f"Train set size: {len(train_loader)}")
-    print(f"Validation set size: {len(val_loader)}")
-    print(f"Test set size: {len(test_loader)}")
+    print(f"Train set size: {len(train_loader.dataset)}")
+    print(f"Validation set size: {len(val_loader.dataset)}")
+    print(f"Test set size: {len(test_loader.dataset)}")
 
     # tuning hyperparameters
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
@@ -60,16 +61,14 @@ def objective(trial):
     l1_lambda = trial.suggest_float("l1_lambda", 1e-5, 1e-2, log=True)
     l2_lambda = trial.suggest_float("l2_lambda", 1e-5, 1e-2, log=True)
 
-    num_epochs: int = 5
+    num_epochs: int = 10
 
-    do_train: bool = False
+    do_train: bool = True
     if do_train:
         model = Model()
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
         accuracy = train_handler.train()
         return accuracy
-    else:
-        return 0.0
 
 if __name__ == '__main__':
     study = optuna.create_study(direction="maximize")

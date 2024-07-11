@@ -2,7 +2,7 @@
 
 ## To do:
 - ~~dodać automatyczną optymalizację hiperparametrów w stylu grid search/ random search/ bayesian optimization~~
-- upewnić się na 110% z rozkładem płci i mówców w zbiorach treningowych, walidacyjnych i testowych
+- ~~upewnić się na 110% z rozkładem płci i mówców w zbiorach treningowych, walidacyjnych i testowych~~
 - ~~dodać więcej języka ang. do zdrowego korpusu~~
 - ~~dodac zbieranie danych z treningu do wizualizacji -> tensorboard~~
 - ~~kfold validacja -> pomysł porzucony, za duy nakład czasu obliczeniowego~~

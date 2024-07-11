@@ -6,9 +6,9 @@ import torch.nn.functional as F
 
 from torch.utils.data import SubsetRandomSampler
 from torch.utils.data import DataLoader
-from torch.nn.utils.rnn import pad_sequence
 from dataloader import DataLoaderHandler
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
+
 class UtilsHandler:
     def __init__(self, data_path: str):
         self.data_path = data_path
@@ -213,4 +213,3 @@ class UtilsHandler:
         labels = torch.tensor(labels)
 
         return inputs_padded, labels
-
