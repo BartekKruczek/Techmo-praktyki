@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from tqdm import tqdm
+from sklearn.metrics import precision_score, recall_score, f1_score
 from torch.utils.tensorboard import SummaryWriter
 
 class TrainHandler():
@@ -51,58 +52,59 @@ class TrainHandler():
 
                 running_loss += loss.item()
                 if i % 10 == 9:
-                    # tqdm.write(f"[{epoch + 1}, {i + 1}] loss: {running_loss / 10:.3f}")
                     running_loss = 0.0
 
             self.writer.add_scalar('training_loss', running_loss / len(self.train_loader), epoch)
 
             scheduler.step()
 
-            self.model.eval()
-            correct = 0
-            total = 0
-            validation_loss = 0.0
-            with torch.no_grad():
-                for data in tqdm(self.valid_loader):
-                    inputs, labels = data
-                    inputs, labels = inputs.to(self.device), labels.to(self.device)
-                    inputs = inputs.unsqueeze(1)
-                    outputs = self.model(inputs)
-                    loss = criterion(outputs, labels)
-                    validation_loss += loss.item()
-                    _, predicted = torch.max(outputs.data, 1)
-                    total += labels.size(0)
-                    correct += (predicted == labels).sum().item()
-
-            validation_accuracy = 100 * correct / total
-            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy:.2f}%")
-            self.writer.add_scalar('validation_loss', validation_loss / len(self.valid_loader), epoch)
+            validation_loss, validation_accuracy, precision, recall, f1 = self.evaluate(self.valid_loader, criterion)
+            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy:.2f}%, Precision: {precision:.2f}, Recall: {recall:.2f}, F1 Score: {f1:.2f}")
+            self.writer.add_scalar('validation_loss', validation_loss, epoch)
             self.writer.add_scalar('validation_accuracy', validation_accuracy, epoch)
+            self.writer.add_scalar('validation_precision', precision, epoch)
+            self.writer.add_scalar('validation_recall', recall, epoch)
+            self.writer.add_scalar('validation_f1_score', f1, epoch)
 
         tqdm.write("Finished Training")
 
-        # test
+        test_loss, test_accuracy, precision, recall, f1 = self.evaluate(self.test_loader, criterion)
+        tqdm.write(f"Test Accuracy: {test_accuracy:.2f}%, Precision: {precision:.2f}, Recall: {recall:.2f}, F1 Score: {f1:.2f}")
+        self.writer.add_scalar('test_loss', test_loss, epoch)
+        self.writer.add_scalar('test_accuracy', test_accuracy, epoch)
+        self.writer.add_scalar('test_precision', precision, epoch)
+        self.writer.add_scalar('test_recall', recall, epoch)
+        self.writer.add_scalar('test_f1_score', f1, epoch)
+
+        self.writer.close()
+        return test_accuracy
+
+    def evaluate(self, data_loader, criterion):
         self.model.eval()
         correct = 0
         total = 0
-        test_loss = 0.0
+        all_labels = []
+        all_predictions = []
+        total_loss = 0.0
+
         with torch.no_grad():
-            for data in tqdm(self.test_loader):
+            for data in tqdm(data_loader):
                 inputs, labels = data
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 inputs = inputs.unsqueeze(1)
                 outputs = self.model(inputs)
                 loss = criterion(outputs, labels)
-                test_loss += loss.item()
+                total_loss += loss.item()
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
+                all_labels.extend(labels.cpu().numpy())
+                all_predictions.extend(predicted.cpu().numpy())
 
-        test_accuracy = 100 * correct / total
-        test_loss = test_loss / len(self.test_loader)
-        tqdm.write(f"Test Accuracy: {test_accuracy:.2f}%")
-        self.writer.add_scalar('test_loss', test_loss, epoch)
-        self.writer.add_scalar('test_accuracy', test_accuracy, epoch)
+        accuracy = 100 * correct / total
+        precision = precision_score(all_labels, all_predictions, average='weighted')
+        recall = recall_score(all_labels, all_predictions, average='weighted')
+        f1 = f1_score(all_labels, all_predictions, average='weighted')
+        total_loss /= len(data_loader)
 
-        self.writer.close()
-        return test_accuracy
+        return total_loss, accuracy, precision, recall, f1

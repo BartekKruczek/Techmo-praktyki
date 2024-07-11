@@ -15,7 +15,8 @@
 - ~~zaktualizowac sciezki do bazy danych -> nowy korpus ang.~~
 - wziąć autoencoder, dotrenować go na naszych danych, a potem użyć go do ekstrakcji cech
 - zwiększyć liczbę klas
-- dodać metryki takie jak F1, precision, recall
+- opcjonalnie zmniejszyć ilość daych - > jedna epoka trwa 1h
+- ~~dodać metryki takie jak F1, precision, recall~~
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)
