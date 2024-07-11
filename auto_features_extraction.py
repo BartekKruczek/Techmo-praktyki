@@ -1,7 +1,6 @@
 import tensorflow as tf
 import tensorflow_hub as hub
-import torchaudio
-import pandas as pd
+import tensorflow_io as tfio
 
 class AutoFeaturesExtraction:
     def __init__(self) -> None:
@@ -17,4 +16,10 @@ class AutoFeaturesExtraction:
         return yamnet_model
     
     def convert_audio_file_to_16kHz(self, file_path: str) -> float:
-        pass
+        file_contents = tf.io.read_file(file_path)
+        wav, sample_rate = tf.audio.decode_wav(file_contents, desired_channels=1)
+        wav = tf.squeeze(wav, axis=-1)
+        sample_rate = tf.cast(sample_rate, dtype=tf.int64)
+        wav = tfio.audio.resample(wav, rate_in=sample_rate, rate_out=16000)
+
+        return wav
