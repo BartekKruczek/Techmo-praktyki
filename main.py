@@ -1,9 +1,6 @@
 import warnings
 import torch
 import optuna
-import tensorflow_io as tfio
-import torchaudio
-import tensorflow as tf
 
 from data import DataHandler
 from utils import UtilsHandler
@@ -46,20 +43,16 @@ def objective(trial):
         my_data.gender_statistic_png()
         my_data.audio_files_length_histogram(dataframe)
 
-    # print(my_auto_features.test_classification(dataframe))
-    # my_auto_features.get_features(dataframe)
-    # my_auto_features.test_yamnet_web()
-    # print(tfio.__version__)
-    # print(tf.__version__)
-    # print(torchaudio.__version__)
-    # print(torch.__version__)
-
     # dataloader section
     data_loader = DataLoaderHandler(dataframe, device, augmentation=True)
     print(f"Len dataloader {data_loader.__len__()}")
 
     # podział na zbiory
-    train_loader, val_loader, test_loader = my_utils.split_dataset_stratified(dataframe, device, sample_size = 10000)
+    do_stratified: bool = False
+    if do_stratified:
+        train_loader, val_loader, test_loader = my_utils.split_dataset_stratified(dataframe, device, sample_size = 30000)
+    else:
+        train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
 
     print(f"Train set size: {len(train_loader.dataset)}")
     print(f"Validation set size: {len(val_loader.dataset)}")
@@ -75,7 +68,7 @@ def objective(trial):
 
     num_epochs: int = 5
 
-    do_train: bool = False
+    do_train: bool = True
     if do_train:
         model = Model()
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)

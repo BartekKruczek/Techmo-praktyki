@@ -138,8 +138,8 @@ class UtilsHandler:
         combined_df = combined_df.dropna(subset = ['gender'])
 
         # get random 10k male and 10k female samples
-        male_df = combined_df[combined_df['gender'] == 'male'].sample(n=10000, random_state=42)
-        female_df = combined_df[combined_df['gender'] == 'female'].sample(n=10000, random_state=42)
+        male_df = combined_df[combined_df['gender'] == 'male'].sample(n=5000, random_state=42)
+        female_df = combined_df[combined_df['gender'] == 'female'].sample(n=5000, random_state=42)
         combined_df = pd.concat([male_df, female_df], ignore_index = True)
 
         # drop 'text', 'up_votes', 'down_votes', 'age', 'accent', 'duration' columns
