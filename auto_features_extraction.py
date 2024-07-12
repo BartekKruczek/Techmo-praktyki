@@ -60,9 +60,19 @@ class AutoFeaturesExtraction:
 
         for elem in audio_paths:
             try:
-                scores, embeddings, spectrogram = model(self.load_wav_16k_mono(elem))
+                wav = self.load_wav_16k_mono(elem)
+                print(f"Loaded wav: {wav}")
+
+                scores, embeddings, spectrogram = model(wav)
+                print(f"Gotten features: {scores}, {embeddings}, {spectrogram}")
+
+                print(f"Starting calculating class scores...")
                 class_scores = tf.reduce_mean(scores, axis=0)
+
+                print(f"Starting calculating top class...")
                 top_class = tf.argmax(class_scores)
+
+                print(f"Starting inferring class...")
                 inferred_class = classes[top_class]
             except Exception as e:
                 print(f"Error: {e}")
