@@ -4,3 +4,5 @@
 *.Ds_Store
 *combined_languages.xlsx
 test_data/
+yamnet-model/
+.venv/

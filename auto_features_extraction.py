@@ -13,8 +13,7 @@ class AutoFeaturesExtraction:
         return "Klasa do automatycznego ekstrahowania cech, YAMNet"
 
     def load_model(self) -> tf.keras.Model:
-        yamnet_model_handle = 'https://www.kaggle.com/models/google/yamnet/TensorFlow2/yamnet/1'
-        yamnet_model = hub.load(yamnet_model_handle)
+        yamnet_model = tf.keras.models.load_model('yamnet-model')
 
         return yamnet_model
     
@@ -51,6 +50,7 @@ class AutoFeaturesExtraction:
         print(f"Done!")
 
     def test(self) -> None:
+        print(f"Testing YAMNet model...")
         testing_wav_file_name = tf.keras.utils.get_file('miaow_16k.wav',
                                                 'https://storage.googleapis.com/audioset/miaow_16k.wav',
                                                 cache_dir='./',
@@ -68,3 +68,4 @@ class AutoFeaturesExtraction:
 
         print(f'The main sound is: {inferred_class}')
         print(f'The embeddings shape: {embeddings.shape}')
+        print(f"End of testing YAMNet model...")
