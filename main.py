@@ -1,6 +1,9 @@
 import warnings
 import torch
 import optuna
+import tensorflow_io as tfio
+import torchaudio
+import tensorflow as tf
 
 from data import DataHandler
 from utils import UtilsHandler
@@ -43,8 +46,13 @@ def objective(trial):
         my_data.gender_statistic_png()
         my_data.audio_files_length_histogram(dataframe)
 
-    print(my_auto_features.test_classification(dataframe))
+    # print(my_auto_features.test_classification(dataframe))
     # my_auto_features.get_features(dataframe)
+    my_auto_features.test_yamnet_web()
+    print(tfio.__version__)
+    print(tf.__version__)
+    print(torchaudio.__version__)
+    print(torch.__version__)
 
     # dataloader section
     data_loader = DataLoaderHandler(dataframe, device, augmentation=True)
