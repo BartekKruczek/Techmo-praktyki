@@ -13,7 +13,9 @@ class AutoFeaturesExtraction:
         return "Klasa do automatycznego ekstrahowania cech, YAMNet"
 
     def load_model(self) -> tf.keras.Model:
-        yamnet_model = tf.keras.models.load_model('yamnet-model')
+        print(f"Loading YAMNet model...")
+        yamnet_model = tf.keras.layers.TFSMLayer('yamnet-model', call_endpoint='serving_default')
+        print(f"YAMNet model loaded!")
 
         return yamnet_model
     
