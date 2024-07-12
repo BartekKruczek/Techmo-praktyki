@@ -13,7 +13,7 @@ class AutoFeaturesExtraction:
         return "Klasa do automatycznego ekstrahowania cech, YAMNet"
 
     def load_model(self) -> tf.keras.Model:
-        yamnet_model_handle = 'https://tfhub.dev/google/yamnet/1'
+        yamnet_model_handle = 'https://www.kaggle.com/models/google/yamnet/TensorFlow2/yamnet/1'
         yamnet_model = hub.load(yamnet_model_handle)
 
         return yamnet_model
@@ -51,10 +51,20 @@ class AutoFeaturesExtraction:
         print(f"Done!")
 
     def test(self) -> None:
-        model = self.load_model()
-        path = "Database/Common_voice/cv-invalid/sample-000001.mp3"
+        testing_wav_file_name = tf.keras.utils.get_file('miaow_16k.wav',
+                                                'https://storage.googleapis.com/audioset/miaow_16k.wav',
+                                                cache_dir='./',
+                                                cache_subdir='test_data')
+        testing_wav_data = self.load_wav_16k_mono(testing_wav_file_name)
 
-        wav = self.load_wav_16k_mono(path)
-        scores, embeddings, spectrogram = model(wav)
+        yamnet_model = self.load_model()
+        class_map_path = yamnet_model.class_map_path().numpy().decode('utf-8')
+        class_names =list(pd.read_csv(class_map_path)['display_name'])
 
-        return scores, embeddings, spectrogram
+        scores, embeddings, spectrogram = yamnet_model(testing_wav_data)
+        class_scores = tf.reduce_mean(scores, axis=0)
+        top_class = tf.argmax(class_scores)
+        inferred_class = class_names[top_class]
+
+        print(f'The main sound is: {inferred_class}')
+        print(f'The embeddings shape: {embeddings.shape}')
