@@ -29,6 +29,12 @@ class AutoFeaturesExtraction:
         
         waveform = waveform.squeeze()
         return tf.convert_to_tensor(waveform, dtype = tf.float32)
+    
+    def load_model_mapping(self) -> list[str]:
+        class_map_path = "yamnet-model/assets/yamnet_class_map.csv"
+        class_names =list(pd.read_csv(class_map_path)['display_name'])
+
+        return class_names
 
     def get_features(self, dataframe: pd.DataFrame) -> None:
         yamnet_model = self.load_model()
