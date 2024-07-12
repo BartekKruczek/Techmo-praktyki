@@ -3,6 +3,7 @@ import pandas as pd
 import torchaudio
 import torch
 import torchaudio.transforms as transforms
+import numpy as np
 
 class AutoFeaturesExtraction:
     def __init__(self) -> None:
@@ -49,3 +50,22 @@ class AutoFeaturesExtraction:
             except Exception as e:
                 print(f"Error: {e}")
                 continue
+
+            return scores, embeddings, spectrogram
+
+    def test_classification(self, dataframe: pd.DataFrame) -> None:
+        classes: list[str] = self.load_model_mapping()
+        model = self.load_model()
+        audio_paths: list[str] = self.get_audios_path(dataframe)
+
+        for elem in audio_paths:
+            try:
+                scores, embeddings, spectrogram = model(self.load_wav_16k_mono(elem))
+                class_scores = tf.reduce_mean(scores, axis=0)
+                top_class = tf.argmax(class_scores)
+                inferred_class = classes[top_class]
+            except Exception as e:
+                print(f"Error: {e}")
+                continue
+
+            return inferred_class

@@ -43,7 +43,7 @@ def objective(trial):
         my_data.gender_statistic_png()
         my_data.audio_files_length_histogram(dataframe)
 
-    my_auto_features.load_model_mapping()
+    print(my_auto_features.test_classification(dataframe))
     # my_auto_features.get_features(dataframe)
 
     # dataloader section
