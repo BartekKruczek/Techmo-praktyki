@@ -175,20 +175,24 @@ class UtilsHandler:
 
         return train_loader, val_loader, test_loader
     
-    def split_dataset_stratified(self, dataframe: pd.DataFrame, device: torch.device):
-        X = dataframe['file_path']
-        y = dataframe[['healthy_status', 'language', 'gender']]
+    def split_dataset_stratified(self, dataframe: pd.DataFrame, device: torch.device, sample_size: int):
+        stratified_split = StratifiedShuffleSplit(n_splits=1, train_size=sample_size, random_state=42)
+        stratified_columns = ['healthy_status', 'language', 'gender']
+        
+        for sample_index, _ in stratified_split.split(dataframe, dataframe[stratified_columns]):
+            sampled_df = dataframe.iloc[sample_index]
+        
+        X = sampled_df['file_path']
+        y = sampled_df[['healthy_status', 'language', 'gender']]
 
         stratified_split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
         for train_index, test_index in stratified_split.split(X, y):
-            train_df, test_df = dataframe.iloc[train_index], dataframe.iloc[test_index]
+            train_df, test_df = sampled_df.iloc[train_index], sampled_df.iloc[test_index]
 
-        # podział zbioru treningowego na treningowy i walidacyjny
         stratified_split = StratifiedShuffleSplit(n_splits=1, test_size=0.25, random_state=42)
         for train_index, val_index in stratified_split.split(train_df['file_path'], train_df[['healthy_status', 'language', 'gender']]):
             train_df, val_df = train_df.iloc[train_index], train_df.iloc[val_index]
 
-        # create data loaders
         train_loader = DataLoader(DataLoaderHandler(train_df, device, augmentation=True), batch_size=32, collate_fn=self.padd_input)
         val_loader = DataLoader(DataLoaderHandler(val_df, device, augmentation=False), batch_size=32, collate_fn=self.padd_input)
         test_loader = DataLoader(DataLoaderHandler(test_df, device, augmentation=False), batch_size=32, collate_fn=self.padd_input)

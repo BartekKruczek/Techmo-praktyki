@@ -15,7 +15,7 @@
 - ~~zaktualizowac sciezki do bazy danych -> nowy korpus ang.~~
 - wziąć autoencoder, dotrenować go na naszych danych, a potem użyć go do ekstrakcji cech
 - zwiększyć liczbę klas
-- opcjonalnie zmniejszyć ilość daych - > jedna epoka trwa 1h
+- ~~opcjonalnie zmniejszyć ilość daych - > jedna epoka trwa 1h~~
 - podrasować istniejący model konwolucyjny
 - ~~dodać metryki takie jak F1, precision, recall~~
 
