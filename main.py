@@ -30,11 +30,11 @@ def objective(trial):
     # print(f"Dataframe head: {dataframe.head()}")
 
     # data section
-    create_excel: bool = False
+    create_excel: bool = True
     if create_excel:
         combined_df = my_utils.combined_language_pd()
         my_utils.excel_creator(combined_df)
-        my_utils.common_voice()
+        # my_utils.common_voice()
 
     create_png: bool = False
     if create_png:

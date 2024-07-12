@@ -117,6 +117,7 @@ class UtilsHandler:
         common_voice_df = self.common_voice()
         
         combined_df = pd.concat([czech_df, english_df, german_df, common_voice_df], ignore_index=True)
+        # combined_df = pd.concat([czech_df, english_df, german_df], ignore_index=True)
         return combined_df
     
     def excel_creator(self, data_frame: pd.DataFrame) -> None:
@@ -138,8 +139,8 @@ class UtilsHandler:
         combined_df = combined_df.dropna(subset = ['gender'])
 
         # get random 10k male and 10k female samples
-        male_df = combined_df[combined_df['gender'] == 'male'].sample(n=5000, random_state=42)
-        female_df = combined_df[combined_df['gender'] == 'female'].sample(n=5000, random_state=42)
+        male_df = combined_df[combined_df['gender'] == 'male'].sample(n=1500, random_state=42)
+        female_df = combined_df[combined_df['gender'] == 'female'].sample(n=1500, random_state=42)
         combined_df = pd.concat([male_df, female_df], ignore_index = True)
 
         # drop 'text', 'up_votes', 'down_votes', 'age', 'accent', 'duration' columns

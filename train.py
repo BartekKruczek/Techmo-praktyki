@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 
 from tqdm import tqdm
-from sklearn.metrics import precision_score, recall_score, f1_score
 from torch.utils.tensorboard import SummaryWriter
 
 class TrainHandler():
@@ -78,15 +77,9 @@ class TrainHandler():
                     predicted_labels.extend(predicted.cpu().numpy())
 
             validation_accuracy = 100 * correct / total
-            precision = precision_score(self.valid_loader.dataset.targets, predicted_labels, average='macro')
-            recall = recall_score(self.valid_loader.dataset.targets, predicted_labels, average='macro')
-            f1 = f1_score(self.valid_loader.dataset.targets, predicted_labels, average='macro')
-            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy:.2f}%, Precision: {precision:.2f}, Recall: {recall:.2f}, F1 Score: {f1:.2f}")
+            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy:.2f}")
             self.writer.add_scalar('validation_loss', validation_loss / len(self.valid_loader), epoch)
             self.writer.add_scalar('validation_accuracy', validation_accuracy, epoch)
-            self.writer.add_scalar('validation_precision', precision, epoch)
-            self.writer.add_scalar('validation_recall', recall, epoch)
-            self.writer.add_scalar('validation_f1', f1, epoch)
 
         tqdm.write("Finished Training")
 
@@ -111,15 +104,9 @@ class TrainHandler():
 
         test_accuracy = 100 * correct / total
         test_loss = test_loss / len(self.test_loader)
-        precision = precision_score(self.test_loader.dataset.targets, predicted_labels, average='macro')
-        recall = recall_score(self.test_loader.dataset.targets, predicted_labels, average='macro')
-        f1 = f1_score(self.test_loader.dataset.targets, predicted_labels, average='macro')
-        tqdm.write(f"Test Accuracy: {test_accuracy:.2f}%, Precision: {precision:.2f}, Recall: {recall:.2f}, F1 Score: {f1:.2f}")
+        tqdm.write(f"Test Accuracy: {test_accuracy:.2f}")
         self.writer.add_scalar('test_loss', test_loss, epoch)
         self.writer.add_scalar('test_accuracy', test_accuracy, epoch)
-        self.writer.add_scalar('test_precision', precision, epoch)
-        self.writer.add_scalar('test_recall', recall, epoch)
-        self.writer.add_scalar('test_f1', f1, epoch)
 
         self.writer.close()
         return test_accuracy
