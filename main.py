@@ -21,8 +21,8 @@ def objective(trial):
     # ignore warnings
     warnings.filterwarnings("ignore")
 
-    my_utils = UtilsHandler("Database")
-    my_data = DataHandler("Database", my_utils)
+    my_utils = UtilsHandler(data_path = "Database", classification = "multi") 
+    my_data = DataHandler(data_path = "Database", utils = my_utils, classification = "multi")
     my_auto_features = AutoFeaturesExtraction()
 
     dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
@@ -30,7 +30,7 @@ def objective(trial):
     # print(f"Dataframe head: {dataframe.head()}")
 
     # data section
-    create_excel: bool = True
+    create_excel: bool = False
     if create_excel:
         combined_df = my_utils.combined_language_pd()
         my_utils.excel_creator(combined_df)
@@ -44,7 +44,7 @@ def objective(trial):
         my_data.audio_files_length_histogram(dataframe)
 
     # dataloader section
-    data_loader = DataLoaderHandler(dataframe, device, augmentation=True)
+    data_loader = DataLoaderHandler(dataframe, device, augmentation=True, classification = "multi")
     print(f"Len dataloader {data_loader.__len__()}")
 
     # podział na zbiory
@@ -70,7 +70,7 @@ def objective(trial):
 
     do_train: bool = True
     if do_train:
-        model = Model()
+        model = Model(num_classes = 6)
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
         accuracy = train_handler.train()
         return accuracy

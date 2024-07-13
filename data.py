@@ -4,9 +4,10 @@ import pandas as pd
 import librosa
 
 class DataHandler:
-    def __init__(self, data_path: str, utils: classmethod) -> None:
+    def __init__(self, data_path: str, utils: classmethod, classification: str) -> None:
         self.data_path = data_path
         self.utils = utils
+        self.classification = classification
 
     def __repr__(self) -> str:
         return f"Klasa do obsługi danych z folderu: {self.data_path}"

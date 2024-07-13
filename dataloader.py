@@ -6,10 +6,11 @@ from torch.utils.data import Dataset
 from torch.nn import functional as F
 
 class DataLoaderHandler(Dataset):
-    def __init__(self, dataframe: pd.DataFrame, device: torch.device, augmentation: bool) -> None:
+    def __init__(self, dataframe: pd.DataFrame, device: torch.device, augmentation: bool, classification: str) -> None:
         self.dataframe = dataframe
         self.device = device
         self.augmentation = augmentation
+        self.classification = classification
 
     def __repr__(self) -> str:
         return "Klasa do ładowania danych, podejście 2.0"
@@ -23,8 +24,19 @@ class DataLoaderHandler(Dataset):
         # drop rows with missing values
         df = df.dropna()
 
-        # iterate in healthy_status column, if pathological 1, if healthy 0
-        df['healthy_status'] = df['healthy_status'].apply(lambda x: 1 if x == 'pathological' else 0)
+        if self.classification != "multi":
+            # iterate in healthy_status column, if pathological 1, if healthy 0
+            df['healthy_status'] = df['healthy_status'].apply(lambda x: 1 if x == 'pathological' else 0)
+        else:
+            class_mapping = {
+                'healthy': 0,
+                'SLI': 1,
+                'Dysarthria': 2,
+                'Cyste': 3,
+                'Laryngitis': 4,
+                'Phonasthenie': 5
+            }
+            df['healthy_status'] = df['healthy_status'].map(class_mapping)
 
         return df
     
