@@ -18,6 +18,7 @@
 - ~~opcjonalnie zmniejszyć ilość daych - > jedna epoka trwa 1h~~
 - ~~podrasować istniejący model konwolucyjny~~
 - ~~dodać metryki takie jak F1, precision, recall~~
+- aktualizacja wizualizacji z multi klasyfikacji
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)

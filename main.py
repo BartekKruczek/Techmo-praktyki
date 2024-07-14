@@ -66,7 +66,7 @@ def objective(trial):
     l1_lambda = trial.suggest_float("l1_lambda", 1e-5, 1e-2, log=True)
     l2_lambda = trial.suggest_float("l2_lambda", 1e-5, 1e-2, log=True)
 
-    num_epochs: int = 5
+    num_epochs: int = 10
 
     do_train: bool = True
     if do_train:
