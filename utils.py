@@ -40,7 +40,7 @@ class UtilsHandler:
                                     if file.endswith(".wav"):
                                         file_path = os.path.join(file_root, file)
                                         if self.classification == "multi":
-                                            data.append((file_path, "Czech", "SLI", "child"))
+                                            data.append((file_path, "Czech", "healthy", "child"))
                                         else:
                                             data.append((file_path, "Czech", "pathological", "child"))
         return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender'])
@@ -310,9 +310,9 @@ class UtilsHandler:
         for train_index, val_index in stratified_split.split(train_df['file_path'], train_df[['healthy_status', 'language', 'gender']]):
             train_df, val_df = train_df.iloc[train_index], train_df.iloc[val_index]
 
-        train_loader = DataLoader(DataLoaderHandler(train_df, device, augmentation=True), batch_size=32, collate_fn=self.padd_input)
-        val_loader = DataLoader(DataLoaderHandler(val_df, device, augmentation=False), batch_size=32, collate_fn=self.padd_input)
-        test_loader = DataLoader(DataLoaderHandler(test_df, device, augmentation=False), batch_size=32, collate_fn=self.padd_input)
+        train_loader = DataLoader(DataLoaderHandler(train_df, device, augmentation=True, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+        val_loader = DataLoader(DataLoaderHandler(val_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+        test_loader = DataLoader(DataLoaderHandler(test_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
 
         return train_loader, val_loader, test_loader
     
