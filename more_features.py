@@ -13,3 +13,6 @@ class MoreFeaturesHandler():
     
     def spectral_centroid(self, audio: np.array, sr: int) -> float:
         return librosa.feature.spectral_centroid(audio, sr = sr)
+    
+    def delta_delta_mfcc(self, audio: np.array, sr: int) -> float:
+        return librosa.feature.delta(librosa.feature.mfcc(audio, sr = sr))
