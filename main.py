@@ -8,6 +8,7 @@ from dataloader import DataLoaderHandler
 from model import Model
 from train import TrainHandler
 from auto_features_extraction import AutoFeaturesExtraction
+from pytorch_model import PytorchModelHandler
 
 def objective(trial):
     case = 2
@@ -28,6 +29,9 @@ def objective(trial):
     dataframe = my_utils.dataframe_from_excel("combined_languages.xlsx")
     # print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
     # print(f"Dataframe head: {dataframe.head()}")
+
+    my_wav2vecmodel = PytorchModelHandler(dataframe)
+    print(my_wav2vecmodel.get_features())
 
     # data section
     create_excel: bool = False
@@ -68,7 +72,7 @@ def objective(trial):
 
     num_epochs: int = 10
 
-    do_train: bool = True
+    do_train: bool = False
     if do_train:
         model = Model(num_classes = 6)
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
