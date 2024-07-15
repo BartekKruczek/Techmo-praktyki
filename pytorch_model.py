@@ -10,8 +10,9 @@ class PytorchModelHandler(Dataset):
     def __init__(self, dataframe: pd.DataFrame, classification: bool) -> None:
         self.model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
         self.processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
-        self.dataframe = self.dataframe_cleaner()
         self.classification = classification
+        self.dataframe = dataframe
+        self.dataframe = self.dataframe_cleaner()
 
     def __repr__(self) -> str:
         return "Klasa do obsługi modelu Pytorch"
@@ -23,7 +24,19 @@ class PytorchModelHandler(Dataset):
         """
         Zwraca parę w postaci tensora cech w postaci wektorowej oraz przypisaną etykietę.
         """
-        pass
+        list_of_audio_paths = self.get_audio_paths()
+        list_of_audio_labels = self.get_labels()
+
+        if len(list_of_audio_paths) == len(list_of_audio_labels):
+            audio_path = list_of_audio_paths[idx]
+            label = list_of_audio_labels[idx]
+
+            audio, sr = self.get_audio(audio_path)
+            if sr != 16000:
+                audio = self.change_sr(audio, sr)
+
+            features = self.extract_features(audio, 16000)
+            return features, label
 
     def dataframe_cleaner(self) -> pd.DataFrame:
         df = self.dataframe
@@ -49,6 +62,9 @@ class PytorchModelHandler(Dataset):
     
     def get_audio_paths(self) -> list[str]:
         return self.dataframe['file_path'].values.tolist()
+    
+    def get_labels(self) -> list[int]:
+        return self.dataframe['healthy_status'].values.tolist()
     
     def get_audio(self, file_path) -> tuple[torch.Tensor, int]:
         try:

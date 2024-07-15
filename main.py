@@ -30,8 +30,8 @@ def objective(trial):
     # print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
     # print(f"Dataframe head: {dataframe.head()}")
 
-    my_wav2vecmodel = PytorchModelHandler(dataframe)
-    print(my_wav2vecmodel.get_features())
+    my_wav2vecmodel = PytorchModelHandler(dataframe = dataframe, classification = "multi")
+    print(my_wav2vecmodel.__getitem__(0))
 
     # data section
     create_excel: bool = False
