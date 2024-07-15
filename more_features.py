@@ -10,3 +10,6 @@ class MoreFeaturesHandler():
     
     def zero_crossing_rate(self, audio: np.array) -> float:
         return librosa.feature.zero_crossing_rate(audio)
+    
+    def spectral_centroid(self, audio: np.array, sr: int) -> float:
+        return librosa.feature.spectral_centroid(audio, sr = sr)
