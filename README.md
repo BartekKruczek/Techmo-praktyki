@@ -19,6 +19,8 @@
 - ~~podrasować istniejący model konwolucyjny~~
 - ~~dodać metryki takie jak F1, precision, recall~~
 - aktualizacja wizualizacji z multi klasyfikacji
+- dodać ekstrakcje innych cech z sygnalu audio
+- zbudowac model, ktory by przyjmowac cechy w postaci wektorowej
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)
