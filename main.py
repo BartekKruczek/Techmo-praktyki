@@ -6,7 +6,9 @@ from data import DataHandler
 from utils import UtilsHandler
 from dataloader import DataLoaderHandler
 from model import Model
+from model_RNN import ModelRNNHandler
 from train import TrainHandler
+from train_RNN import TrainHandlerRNN
 from auto_features_extraction import AutoFeaturesExtraction
 from pytorch_model import PytorchModelHandler
 
@@ -72,12 +74,20 @@ def objective(trial):
 
     num_epochs: int = 10
 
-    do_train: bool = False
-    if do_train:
+    do_train: bool = True
+    case_train = 2
+
+    if do_train and case_train == 1:
         model = Model(num_classes = 6)
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
         accuracy = train_handler.train()
         return accuracy
+    elif do_train and case_train == 2:
+        model = ModelRNNHandler(input_size = 768, hidden_size = 512, num_layers = 2, num_classes = 6)
+        train_handler = TrainHandlerRNN(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
+        accuracy = train_handler.train()
+        return accuracy
+
 
 if __name__ == '__main__':
     study = optuna.create_study(direction="maximize")
