@@ -5,7 +5,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 
-class TrainHandlerRNN():
+class TrainHandlerRNN:
     def __init__(self, model, train_set, valid_set, test_set, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda) -> None:
         self.model = model.to(device)
         self.train_loader = train_set
@@ -34,11 +34,14 @@ class TrainHandlerRNN():
             for i, data in enumerate(tqdm(self.train_loader), 0):
                 inputs, labels = data
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
+                
+                batch_size, seq_len, feature_dim = inputs.size()
+                print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")
+                
 
-                inputs = inputs.unsqueeze(1) 
+                inputs = inputs.view(inputs.size(0), -1, 768)
 
                 optimizer.zero_grad()
-
                 outputs = self.model(inputs)
                 loss = criterion(outputs, labels)
 
@@ -65,7 +68,7 @@ class TrainHandlerRNN():
                 for data in tqdm(self.valid_loader):
                     inputs, labels = data
                     inputs, labels = inputs.to(self.device), labels.to(self.device)
-                    inputs = inputs.unsqueeze(1)
+                    inputs = inputs.view(inputs.size(0), -1, 768)
                     outputs = self.model(inputs)
                     loss = criterion(outputs, labels)
                     validation_loss += loss.item()
@@ -101,7 +104,7 @@ class TrainHandlerRNN():
             for data in tqdm(self.test_loader):
                 inputs, labels = data
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
-                inputs = inputs.unsqueeze(1)
+                inputs = inputs.view(inputs.size(0), -1, 768)
                 outputs = self.model(inputs)
                 loss = criterion(outputs, labels)
                 test_loss += loss.item()

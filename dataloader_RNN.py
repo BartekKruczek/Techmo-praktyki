@@ -18,13 +18,16 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler):
         return len(self.dataframe)
     
     def __getitem__(self, idx: int):
-        features, label = PytorchModelHandler.__getitem__(self, idx)
+            features, label = PytorchModelHandler.__getitem__(self, idx)
+            
+            features = torch.tensor(features, dtype=torch.float32)
+            features = features.squeeze(0)
 
-        # reduce features dimension
-        features = torch.tensor(features)
-        features = features.squeeze_(0)
-
-        label = torch.tensor(label)
-        label = torch.tensor(label)
-
-        return features, label
+            label = torch.tensor(label, dtype=torch.long)
+            return features, label
+    
+    def check_inputs_shape(self, train_loader) -> None:
+        for i, data in enumerate(train_loader):
+            inputs, labels = data
+            batch_size, seq_len, feature_dim = inputs.size()
+            print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")

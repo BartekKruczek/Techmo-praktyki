@@ -32,9 +32,8 @@ def objective(trial):
     # print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
     # print(f"Dataframe head: {dataframe.head()}")
 
-    # my_RNNHandler = DataLoaderRNNHandler(dataframe, device, augmentation = True, classification = "multi")
-    # print(f"Len dataloader RNN {my_RNNHandler.__len__()}")
-    # print(f"First features: {my_RNNHandler.__getitem__(0)}")
+    my_RNNHandler = DataLoaderRNNHandler(dataframe, device, augmentation = True, classification = "multi")
+    print(f"First features: {my_RNNHandler.__getitem__(0)[0].shape}")
 
     # data section
     create_excel: bool = False
@@ -54,10 +53,10 @@ def objective(trial):
     case = 2
     if case == 1:
         data_loader = DataLoaderHandler(dataframe, device, augmentation=True, classification = "multi")
-        print(f"Len dataloader {data_loader.__len__()}")
+        # print(f"Len dataloader {data_loader.__len__()}")
     elif case == 2:
         data_loader = DataLoaderRNNHandler(dataframe, device, augmentation=True, classification = "multi")
-        print(f"Len dataloader RNN {data_loader.__len__()}")
+        # print(f"Len dataloader RNN {data_loader.__len__()}")
 
     # podział na zbiory
     do_stratified: bool = False
@@ -65,6 +64,8 @@ def objective(trial):
         train_loader, val_loader, test_loader = my_utils.split_dataset_stratified(dataframe, device, sample_size = 30000)
     else:
         train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
+
+    my_RNNHandler.check_inputs_shape(train_loader)
 
     # tuning hyperparameters
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
@@ -76,7 +77,7 @@ def objective(trial):
 
     num_epochs: int = 10
 
-    do_train: bool = True
+    do_train: bool = False
     case_train = 2
 
     if do_train and case_train == 1:
