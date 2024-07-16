@@ -10,7 +10,7 @@ from model_RNN import ModelRNNHandler
 from train import TrainHandler
 from train_RNN import TrainHandlerRNN
 from auto_features_extraction import AutoFeaturesExtraction
-from pytorch_model import PytorchModelHandler
+from dataloader_RNN import DataLoaderRNNHandler
 
 def objective(trial):
     case = 2
@@ -32,8 +32,9 @@ def objective(trial):
     # print(f"NaN values in dataframe: {dataframe.isnull().sum().sum()}")
     # print(f"Dataframe head: {dataframe.head()}")
 
-    my_wav2vecmodel = PytorchModelHandler(dataframe = dataframe, classification = "multi")
-    print(my_wav2vecmodel.__getitem__(0))
+    # my_RNNHandler = DataLoaderRNNHandler(dataframe, device, augmentation = True, classification = "multi")
+    # print(f"Len dataloader RNN {my_RNNHandler.__len__()}")
+    # print(f"First features: {my_RNNHandler.__getitem__(0)}")
 
     # data section
     create_excel: bool = False
@@ -49,9 +50,14 @@ def objective(trial):
         my_data.gender_statistic_png()
         my_data.audio_files_length_histogram(dataframe)
 
-    # dataloader section
-    data_loader = DataLoaderHandler(dataframe, device, augmentation=True, classification = "multi")
-    print(f"Len dataloader {data_loader.__len__()}")
+    # dataloader section, case = 1 if features mel spectrogram, case = 2 if features from model
+    case = 2
+    if case == 1:
+        data_loader = DataLoaderHandler(dataframe, device, augmentation=True, classification = "multi")
+        print(f"Len dataloader {data_loader.__len__()}")
+    elif case == 2:
+        data_loader = DataLoaderRNNHandler(dataframe, device, augmentation=True, classification = "multi")
+        print(f"Len dataloader RNN {data_loader.__len__()}")
 
     # podział na zbiory
     do_stratified: bool = False
@@ -59,10 +65,6 @@ def objective(trial):
         train_loader, val_loader, test_loader = my_utils.split_dataset_stratified(dataframe, device, sample_size = 30000)
     else:
         train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
-
-    print(f"Train set size: {len(train_loader.dataset)}")
-    print(f"Validation set size: {len(val_loader.dataset)}")
-    print(f"Test set size: {len(test_loader.dataset)}")
 
     # tuning hyperparameters
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)

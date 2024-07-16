@@ -20,4 +20,11 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler):
     def __getitem__(self, idx: int):
         features, label = PytorchModelHandler.__getitem__(self, idx)
 
+        # reduce features dimension
+        features = torch.tensor(features)
+        features = features.squeeze_(0)
+
+        label = torch.tensor(label)
+        label = torch.tensor(label)
+
         return features, label
