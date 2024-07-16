@@ -26,6 +26,15 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler):
             label = torch.tensor(label, dtype=torch.long)
             return features, label
     
+    def pad_features(self, features, pad_size):
+        if features.size(1) > pad_size:
+            return features[:, :pad_size]
+        elif features.size(1) < pad_size:
+            pad = torch.zeros(features.size(0), pad_size - features.size(1))
+            return torch.cat((features, pad), dim=1)
+        else:
+            return features
+    
     def check_inputs_shape(self, train_loader) -> None:
         for i, data in enumerate(train_loader):
             inputs, labels = data
