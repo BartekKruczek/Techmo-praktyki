@@ -19,7 +19,7 @@
 - ~~podrasować istniejący model konwolucyjny~~
 - ~~dodać metryki takie jak F1, precision, recall~~
 - aktualizacja wizualizacji z multi klasyfikacji
-- dodać ekstrakcje innych cech z sygnalu audio
+- ~~dodać ekstrakcje innych cech z sygnalu audio~~
 - zbudowac model, ktory by przyjmowac cechy w postaci wektorowej
 
 ## Opis baz danych:
