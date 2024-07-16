@@ -1,12 +1,14 @@
+import torch
+
 from pandas import DataFrame
-from torch import device
-from torch._C import device
 from dataloader import DataLoaderHandler
 from more_features import MoreFeaturesHandler
+from pytorch_model import PytorchModelHandler
 
-class DataLoaderRNNHandler(DataLoaderHandler):
-    def __init__(self, dataframe: DataFrame, device: device, augmentation: bool, classification: str) -> None:
-        super().__init__(dataframe, device, augmentation, classification)
+class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler):
+    def __init__(self, dataframe: DataFrame, device: torch.device, augmentation: bool, classification: str) -> None:
+        DataLoaderHandler.__init__(self, dataframe, device, augmentation, classification)
+        PytorchModelHandler.__init__(self, dataframe, classification)
         self.more_features = MoreFeaturesHandler()
 
     def __repr__(self) -> str:
@@ -16,9 +18,6 @@ class DataLoaderRNNHandler(DataLoaderHandler):
         return len(self.dataframe)
     
     def __getitem__(self, idx: int):
-        # df oczyszczony, zmienione klasy na liczby
-        df = self.dataframe_cleaner()
+        features, label = PytorchModelHandler.__getitem__(self, idx)
 
-        audio_path = df.iloc[idx]['file_path']
-        label = df.iloc[idx]['healthy_status']
-
+        return features, label
