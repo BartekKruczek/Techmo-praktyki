@@ -63,3 +63,33 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, Dataset):
         print(f"Counter greater than 3000: {counter_greater_than_3000}")
         print(f"Counter greater than 2000: {counter_greater_than_2000}")
         print(f"Counter all: {all_counter}")
+
+    def check_inputs_shape_after_padding(self, train_loader) -> None:
+        max_dim = 0
+        all_values = []
+        all_counter = 0
+        counter_greater_than_3000 = 0
+        counter_greater_than_2000 = 0
+
+        for i, data in enumerate(train_loader):
+            inputs, labels = data
+            inputs = self.pad_feature_to_max_dim(inputs)
+            batch_size, seq_len, feature_dim = inputs.size()
+            all_values.append(feature_dim)
+            all_counter += 1
+            print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")
+
+            if feature_dim > max_dim:
+                max_dim = feature_dim
+
+            if feature_dim > 3000:
+                counter_greater_than_3000 += 1
+
+            if feature_dim > 2000:
+                counter_greater_than_2000 += 1
+
+        print(f"Max feature dimension: {max_dim}")
+        print(f"Mean feature dimension: {sum(all_values) / len(all_values)}")
+        print(f"Counter greater than 3000: {counter_greater_than_3000}")
+        print(f"Counter greater than 2000: {counter_greater_than_2000}")
+        print(f"Counter all: {all_counter}")

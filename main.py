@@ -65,7 +65,8 @@ def objective(trial):
     else:
         train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
 
-    my_RNNHandler.check_inputs_shape(train_loader)
+    # my_RNNHandler.check_inputs_shape(train_loader)
+    my_RNNHandler.check_inputs_shape_after_padding(train_loader)
 
     # tuning hyperparameters
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
