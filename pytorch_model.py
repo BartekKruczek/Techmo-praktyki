@@ -32,10 +32,12 @@ class PytorchModelHandler(Dataset):
             label = list_of_audio_labels[idx]
 
             audio, sr = self.get_audio(audio_path)
-            if sr != 16000:
-                audio = self.change_sr(audio, sr)
 
-            features = self.extract_features(audio, 16000)
+            if audio is not None and sr is not None:
+                if sr != 16000:
+                    audio = self.change_sr(audio, sr)
+
+                    features = self.extract_features(audio, 16000)
             return features, label
 
     def dataframe_cleaner(self) -> pd.DataFrame:
