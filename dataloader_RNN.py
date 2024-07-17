@@ -25,6 +25,9 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesH
         label = torch.tensor(label, dtype=torch.long)
         return features, label
     
+    def stact_features(self, features: torch.Tensor, label: int) -> torch.Tensor:
+        pass
+    
     @staticmethod
     def pad_feature_to_max_dim(self, input, max_dim = 2500) -> torch.Tensor:
         batch_size, seq_len, feature_dim = input.size()
