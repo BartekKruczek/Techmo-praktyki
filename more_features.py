@@ -1,5 +1,6 @@
 import numpy as np
 import librosa
+import torch
 
 class MoreFeaturesHandler():
     def __init__(self) -> None:
@@ -16,3 +17,11 @@ class MoreFeaturesHandler():
     
     def delta_delta_mfcc(self, audio: np.array, sr: int) -> float:
         return librosa.feature.delta(librosa.feature.mfcc(audio, sr = sr))
+    
+    def combined_features(self, audio: np.array, sr: int) -> np.array:
+        zcr = self.zero_crossing_rate(audio)
+        sc = self.spectral_centroid(audio, sr)
+        ddm = self.delta_delta_mfcc(audio, sr)
+        
+        # torch vstack
+        return np.vstack((zcr, sc, ddm), dtype = torch.float32)
