@@ -36,12 +36,12 @@ class TrainHandlerRNN:
             for i, data in enumerate(tqdm(self.train_loader), 0):
                 inputs, labels = data
 
-                # inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
+                inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
 
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 
                 batch_size, seq_len, feature_dim = inputs.size()
-                print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")
+                # print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")
 
                 optimizer.zero_grad()
                 outputs = self.model(inputs)
@@ -70,7 +70,7 @@ class TrainHandlerRNN:
                 for data in tqdm(self.valid_loader):
                     inputs, labels = data
 
-                    # inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
+                    inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
 
                     inputs, labels = inputs.to(self.device), labels.to(self.device)
                     outputs = self.model(inputs)
@@ -108,7 +108,7 @@ class TrainHandlerRNN:
             for data in tqdm(self.test_loader):
                 inputs, labels = data
 
-                # inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
+                inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
 
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 outputs = self.model(inputs)

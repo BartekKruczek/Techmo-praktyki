@@ -22,15 +22,10 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesH
     
     def __getitem__(self, idx: int):
         features, label = PytorchModelHandler.__getitem__(self, idx)
-        
-        # features = torch.tensor(features, dtype=torch.float32)
-        # features = features.squeeze(0)
-        # label = torch.tensor(label, dtype=torch.long)
-
         return features, label
     
     @staticmethod
-    def pad_feature_to_max_dim(self, input, max_dim = 2500) -> torch.Tensor:
+    def pad_feature_to_max_dim(self, input, max_dim = 1250) -> torch.Tensor:
         batch_size, seq_len, feature_dim = input.size()
 
         if feature_dim > max_dim:
@@ -46,6 +41,8 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesH
         all_counter = 0
         counter_greater_than_3000 = 0
         counter_greater_than_2000 = 0
+        counter_greater_than_1000 = 0
+        counter_greater_than_1500 = 0
 
         for i, data in enumerate(train_loader):
             inputs, labels = data
@@ -63,10 +60,18 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesH
             if feature_dim > 2000:
                 counter_greater_than_2000 += 1
 
+            if feature_dim > 1500:
+                counter_greater_than_1500 += 1
+
+            if feature_dim > 1000:
+                counter_greater_than_1000 += 1
+
         print(f"Max feature dimension: {max_dim}")
         print(f"Mean feature dimension: {sum(all_values) / len(all_values)}")
         print(f"Counter greater than 3000: {counter_greater_than_3000}")
         print(f"Counter greater than 2000: {counter_greater_than_2000}")
+        print(f"Counter greater than 1500: {counter_greater_than_1500}")
+        print(f"Counter greater than 1000: {counter_greater_than_1000}")
         print(f"Counter all: {all_counter}")
 
     def check_inputs_shape_after_padding(self, train_loader) -> None:

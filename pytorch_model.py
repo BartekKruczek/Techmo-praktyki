@@ -1,19 +1,14 @@
-import pandas as pd
-import torchaudio
 import torch
-import numpy as np
+import torchaudio
 import librosa
+import numpy as np
+import pandas as pd
 
-from transformers import Wav2Vec2Model, Wav2Vec2Processor
-from torchaudio.transforms import Resample
 from torch.utils.data import Dataset
-from dataloader import DataLoaderHandler
-from torch.nn import functional as F
+from torchaudio.transforms import Resample
 
 class PytorchModelHandler(Dataset):
     def __init__(self, dataframe: pd.DataFrame, augmentation: bool, classification: bool) -> None:
-        self.model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
-        self.processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
         self.classification = classification
         self.dataframe = dataframe
         self.dataframe = self.dataframe_cleaner()
@@ -43,11 +38,9 @@ class PytorchModelHandler(Dataset):
 
             if audio is not None and sr is not None:
                 features = self.extract_features(audio, sr)
-                print(f"Features: {features}, Label: {label}")
+                return features, label
             else:
                 return None, None
-
-            return features, label
 
     def dataframe_cleaner(self) -> pd.DataFrame:
         df = self.dataframe
@@ -56,7 +49,6 @@ class PytorchModelHandler(Dataset):
         df = df.dropna()
 
         if self.classification != "multi":
-            # iterate in healthy_status column, if pathological 1, if healthy 0
             df['healthy_status'] = df['healthy_status'].apply(lambda x: 1 if x == 'pathological' else 0)
         else:
             class_mapping = {
@@ -86,24 +78,18 @@ class PytorchModelHandler(Dataset):
         return y, sr
     
     def change_sr(self, audio: torch.Tensor, sr: int) -> torch.Tensor:
-        return Resample(orig_freq = sr, new_freq = 16000)(audio)
+        return Resample(orig_freq=sr, new_freq=16000)(audio)
         
     def extract_features(self, audio: torch.Tensor, sr: int) -> dict:
         audio_np = audio.squeeze().numpy()
-        zcr = librosa.feature.zero_crossing_rate(audio_np)
-        sc = librosa.feature.spectral_centroid(y = audio_np, sr = sr)
-        ddm = librosa.feature.delta(librosa.feature.mfcc(y = audio_np, sr=sr))
+        zcr = librosa.feature.zero_crossing_rate(y=audio_np)
+        sc = librosa.feature.spectral_centroid(y=audio_np, sr=sr)
+        ddm = librosa.feature.delta(librosa.feature.mfcc(y=audio_np, sr=sr))
 
-        # print all features
-        # print(f"Zero crossing rate: {zcr}")
-        # print(f"Spectral centroid: {sc}")
-        # print(f"Delta delta MFCC: {ddm}")
+        # stack features
+        features = np.vstack((zcr, sc, ddm)).T
 
-        return {
-            'zcr': torch.tensor(zcr, dtype=torch.float32),
-            'sc': torch.tensor(sc, dtype=torch.float32),
-            'ddm': torch.tensor(ddm, dtype=torch.float32)
-        }
+        return torch.tensor(features, dtype=torch.float32)
     
     def get_features(self) -> torch.Tensor:
         list_of_audio_paths = self.get_audio_paths()
@@ -118,7 +104,6 @@ class PytorchModelHandler(Dataset):
                 continue
         
     def apply_random_augmentation(self, audio: torch.Tensor) -> torch.Tensor:
-        # randomly select augmentation
         augmentations = [self.add_noise, self.add_shift, self.add_stretch]
         augmentation = augmentations[torch.randint(0, len(augmentations), (1,)).item()]
 
@@ -140,23 +125,6 @@ class PytorchModelHandler(Dataset):
     def add_stretch(self, audio: torch.Tensor) -> torch.Tensor:
         stretch_factor = 1.2
         stretch_length = int(audio.size(1) * stretch_factor)
-        stretched_audio = F.interpolate(audio.unsqueeze(0), size=(stretch_length,), mode='nearest').squeeze(0)
+        stretched_audio = torch.nn.functional.interpolate(audio.unsqueeze(0), size=(stretch_length,), mode='nearest').squeeze(0)
 
         return stretched_audio
-    
-    def zero_crossing_rate(self, audio: np.array) -> float:
-        return librosa.feature.zero_crossing_rate(audio)
-    
-    def spectral_centroid(self, audio: np.array, sr: int) -> float:
-        return librosa.feature.spectral_centroid(audio, sr = sr)
-    
-    def delta_delta_mfcc(self, audio: np.array, sr: int) -> float:
-        return librosa.feature.delta(librosa.feature.mfcc(audio, sr = sr))
-    
-    def combined_features(self, audio: np.array, sr: int) -> torch.Tensor:
-        zcr = self.zero_crossing_rate(audio)
-        sc = self.spectral_centroid(audio, sr)
-        ddm = self.delta_delta_mfcc(audio, sr)
-        
-        features = np.vstack((zcr, sc, ddm)).T
-        return torch.tensor(features, dtype = torch.float32)
