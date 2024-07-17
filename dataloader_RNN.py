@@ -5,11 +5,11 @@ from dataloader import DataLoaderHandler
 from more_features import MoreFeaturesHandler
 from pytorch_model import PytorchModelHandler
 
-class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, Dataset):
+class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesHandler):
     def __init__(self, dataframe: DataFrame, device: torch.device, augmentation: bool, classification: str) -> None:
         DataLoaderHandler.__init__(self, dataframe, device, augmentation, classification)
         PytorchModelHandler.__init__(self, dataframe, classification)
-        self.more_features = MoreFeaturesHandler()
+        MoreFeaturesHandler.__init__(self)
 
     def __repr__(self) -> str:
         return "Klasa do ładowania danych, podejście 2.0 dla RNN"
@@ -25,6 +25,7 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, Dataset):
         label = torch.tensor(label, dtype=torch.long)
         return features, label
     
+    @staticmethod
     def pad_feature_to_max_dim(self, input, max_dim = 2500) -> torch.Tensor:
         batch_size, seq_len, feature_dim = input.size()
 

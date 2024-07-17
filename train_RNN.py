@@ -1,9 +1,11 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
 from sklearn.metrics import precision_score, recall_score, f1_score
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
+from dataloader_RNN import DataLoaderRNNHandler
 
 class TrainHandlerRNN:
     def __init__(self, model, train_set, valid_set, test_set, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda) -> None:
@@ -33,13 +35,13 @@ class TrainHandlerRNN:
             running_loss = 0.0
             for i, data in enumerate(tqdm(self.train_loader), 0):
                 inputs, labels = data
+
+                inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
+
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 
                 batch_size, seq_len, feature_dim = inputs.size()
-                print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")
-                
-
-                inputs = inputs.view(inputs.size(0), -1, 768)
+                # print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")
 
                 optimizer.zero_grad()
                 outputs = self.model(inputs)
@@ -67,8 +69,10 @@ class TrainHandlerRNN:
             with torch.no_grad():
                 for data in tqdm(self.valid_loader):
                     inputs, labels = data
+
+                    inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
+
                     inputs, labels = inputs.to(self.device), labels.to(self.device)
-                    inputs = inputs.view(inputs.size(0), -1, 768)
                     outputs = self.model(inputs)
                     loss = criterion(outputs, labels)
                     validation_loss += loss.item()
@@ -103,8 +107,10 @@ class TrainHandlerRNN:
         with torch.no_grad():
             for data in tqdm(self.test_loader):
                 inputs, labels = data
+
+                inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
+
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
-                inputs = inputs.view(inputs.size(0), -1, 768)
                 outputs = self.model(inputs)
                 loss = criterion(outputs, labels)
                 test_loss += loss.item()
