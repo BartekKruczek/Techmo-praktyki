@@ -58,6 +58,8 @@ def objective(trial):
         data_loader = DataLoaderRNNHandler(dataframe, device, augmentation=True, classification = classif)
         # print(f"Len dataloader RNN {data_loader.__len__()}")
 
+    data_loader.__getitem__(0)
+
     # podział na zbiory
     do_stratified: bool = False
     if do_stratified:
@@ -65,7 +67,7 @@ def objective(trial):
     else:
         train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
 
-    my_RNNHandler.check_inputs_shape(train_loader)
+    # my_RNNHandler.check_inputs_shape(train_loader)
     # my_RNNHandler.check_inputs_shape_after_padding(train_loader)
 
     # tuning hyperparameters

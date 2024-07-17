@@ -43,6 +43,7 @@ class PytorchModelHandler(Dataset):
 
             if audio is not None and sr is not None:
                 features = self.extract_features(audio, sr)
+                print(f"Features: {features}, Label: {label}")
             else:
                 return None, None
 
@@ -90,8 +91,13 @@ class PytorchModelHandler(Dataset):
     def extract_features(self, audio: torch.Tensor, sr: int) -> dict:
         audio_np = audio.squeeze().numpy()
         zcr = librosa.feature.zero_crossing_rate(audio_np)
-        sc = librosa.feature.spectral_centroid(audio_np, sr=sr)
-        ddm = librosa.feature.delta(librosa.feature.mfcc(audio_np, sr=sr))
+        sc = librosa.feature.spectral_centroid(y = audio_np, sr = sr)
+        ddm = librosa.feature.delta(librosa.feature.mfcc(y = audio_np, sr=sr))
+
+        # print all features
+        # print(f"Zero crossing rate: {zcr}")
+        # print(f"Spectral centroid: {sc}")
+        # print(f"Delta delta MFCC: {ddm}")
 
         return {
             'zcr': torch.tensor(zcr, dtype=torch.float32),

@@ -23,9 +23,10 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesH
     def __getitem__(self, idx: int):
         features, label = PytorchModelHandler.__getitem__(self, idx)
         
-        features = torch.tensor(features, dtype=torch.float32)
-        features = features.squeeze(0)
-        label = torch.tensor(label, dtype=torch.long)
+        # features = torch.tensor(features, dtype=torch.float32)
+        # features = features.squeeze(0)
+        # label = torch.tensor(label, dtype=torch.long)
+
         return features, label
     
     @staticmethod
