@@ -22,6 +22,7 @@
 - ~~dodać ekstrakcje innych cech z sygnalu audio~~
 - ~~zbudowac model, ktory by przyjmowac cechy w postaci wektorowej~~
 - ~~naprawa wymiarowości wejścia do modelu~~
+- połączenie ze sobą cech wektorowych w jedną macierz
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)

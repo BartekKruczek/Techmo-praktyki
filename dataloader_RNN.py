@@ -1,4 +1,7 @@
 import torch
+import torchaudio
+import librosa
+
 from torch.utils.data import Dataset, DataLoader
 from pandas import DataFrame
 from dataloader import DataLoaderHandler
@@ -8,8 +11,8 @@ from pytorch_model import PytorchModelHandler
 class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesHandler):
     def __init__(self, dataframe: DataFrame, device: torch.device, augmentation: bool, classification: str) -> None:
         DataLoaderHandler.__init__(self, dataframe, device, augmentation, classification)
-        PytorchModelHandler.__init__(self, dataframe, classification)
-        MoreFeaturesHandler.__init__(self)
+        PytorchModelHandler.__init__(self, dataframe, augmentation, classification)
+        MoreFeaturesHandler.__init__(self, dataframe, classification)
 
     def __repr__(self) -> str:
         return "Klasa do ładowania danych, podejście 2.0 dla RNN"
@@ -24,9 +27,6 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesH
         features = features.squeeze(0)
         label = torch.tensor(label, dtype=torch.long)
         return features, label
-    
-    def stact_features(self, features: torch.Tensor, label: int) -> torch.Tensor:
-        pass
     
     @staticmethod
     def pad_feature_to_max_dim(self, input, max_dim = 2500) -> torch.Tensor:

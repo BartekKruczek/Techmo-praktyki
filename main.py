@@ -34,7 +34,6 @@ def objective(trial):
     # print(f"Dataframe head: {dataframe.head()}")
 
     my_RNNHandler = DataLoaderRNNHandler(dataframe, device, augmentation = True, classification = classif)
-    print(f"First features: {my_RNNHandler.__getitem__(0)[0].shape}")
 
     # data section
     create_excel: bool = True
@@ -43,7 +42,7 @@ def objective(trial):
         my_utils.excel_creator(combined_df)
         my_utils.common_voice()
 
-    create_png: bool = True
+    create_png: bool = False
     if create_png:
         languages = my_data.all_languages_counter()
         my_data.plot_statistics(languages)
@@ -66,7 +65,7 @@ def objective(trial):
     else:
         train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
 
-    # my_RNNHandler.check_inputs_shape(train_loader)
+    my_RNNHandler.check_inputs_shape(train_loader)
     # my_RNNHandler.check_inputs_shape_after_padding(train_loader)
 
     # tuning hyperparameters
@@ -79,7 +78,7 @@ def objective(trial):
 
     num_epochs: int = 10
 
-    do_train: bool = True
+    do_train: bool = False
     case_train = 2
 
     if do_train and case_train == 1:
@@ -88,7 +87,7 @@ def objective(trial):
         accuracy = train_handler.train()
         return accuracy
     elif do_train and case_train == 2:
-        model = ModelRNNHandler(input_size = 2500, hidden_size = 512, num_layers = 10, num_classes = 6)
+        model = ModelRNNHandler(input_size = 2500, hidden_size = 512, num_layers = 10, num_classes = 2)
         train_handler = TrainHandlerRNN(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
         accuracy = train_handler.train()
         return accuracy
