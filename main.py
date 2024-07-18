@@ -42,7 +42,7 @@ def objective(trial):
         my_utils.excel_creator(combined_df)
         my_utils.common_voice()
 
-    create_png: bool = False
+    create_png: bool = True
     if create_png:
         languages = my_data.all_languages_counter()
         my_data.plot_statistics(languages)
@@ -50,7 +50,7 @@ def objective(trial):
         my_data.audio_files_length_histogram(dataframe)
 
     # dataloader section, case = 1 if features mel spectrogram, case = 2 if features from model
-    case = 2
+    case = 1
     if case == 1:
         data_loader = DataLoaderHandler(dataframe, device, augmentation=True, classification = classif)
         # print(f"Len dataloader {data_loader.__len__()}")
@@ -58,9 +58,9 @@ def objective(trial):
         data_loader = DataLoaderRNNHandler(dataframe, device, augmentation=True, classification = classif)
         # print(f"Len dataloader RNN {data_loader.__len__()}")
 
-    print(data_loader.__getitem__(0))
-    print(f"Shape of 1-st element: {data_loader.__getitem__(0)[0].shape}")
-    print(f"Type: {type(data_loader.__getitem__(0))}")
+    # print(data_loader.__getitem__(0))
+    # print(f"Shape of 1-st element: {data_loader.__getitem__(0)[0].shape}")
+    # print(f"Type: {type(data_loader.__getitem__(0))}")
 
     # podział na zbiory
     do_stratified: bool = False
@@ -82,11 +82,11 @@ def objective(trial):
 
     num_epochs: int = 10
 
-    do_train: bool = True
+    do_train: bool = False
     case_train = 2
 
     if do_train and case_train == 1:
-        model = Model(num_classes = 6)
+        model = Model(num_classes = 2)
         train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
         accuracy = train_handler.train()
         return accuracy

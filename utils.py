@@ -29,9 +29,9 @@ class UtilsHandler:
                                     if file.endswith(".wav"):
                                         file_path = os.path.join(file_root, file)
                                         if self.classification == "multi":
-                                            data.append((file_path, "Czech", "healthy", "child"))
+                                            data.append((file_path, "Czech", "healthy", "child", "healthy_child"))
                                         else:
-                                            data.append((file_path, "Czech", "healthy", "child"))
+                                            data.append((file_path, "Czech", "healthy", "child", "healthy_child"))
                 elif dir == "Patients":
                     for subroot, subdirs, subfiles in os.walk(os.path.join(root, dir)):
                         for subdir in subdirs:
@@ -40,10 +40,10 @@ class UtilsHandler:
                                     if file.endswith(".wav"):
                                         file_path = os.path.join(file_root, file)
                                         if self.classification == "multi":
-                                            data.append((file_path, "Czech", "healthy", "child"))
+                                            data.append((file_path, "Czech", "SLI", "child", "SLI_child"))
                                         else:
-                                            data.append((file_path, "Czech", "pathological", "child"))
-        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender'])
+                                            data.append((file_path, "Czech", "pathological", "child", "pathological_child"))
+        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender', 'healthy_status_gender'])
 
     def english_language_pd(self) -> pd.DataFrame:
         data = []
@@ -63,9 +63,9 @@ class UtilsHandler:
                                                             if file.endswith(".wav"):
                                                                 file_path = os.path.join(root, file)
                                                                 if self.classification == "multi":
-                                                                    data.append((file_path, "English", "Dysarthria", "female"))
+                                                                    data.append((file_path, "English", "Dysarthria", "female", "DYSARTHRIA_female"))
                                                                 else:
-                                                                    data.append((file_path, "English", "pathological", "female"))
+                                                                    data.append((file_path, "English", "pathological", "female", "pathological_female"))
                 elif dir1 == "M":
                     for root, dirs2, files in os.walk(os.path.join(self.data_path, 'Torgo_dysarthria', dir1)):
                         for dir2 in dirs2:
@@ -80,10 +80,10 @@ class UtilsHandler:
                                                             if file.endswith(".wav"):
                                                                 file_path = os.path.join(root, file)
                                                                 if self.classification == "multi":
-                                                                    data.append((file_path, "English", "Dysarthria", "male"))
+                                                                    data.append((file_path, "English", "Dysarthria", "male", "DYSARTHRIA_male"))
                                                                 else:
-                                                                    data.append((file_path, "English", "pathological", "male"))
-        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender'])
+                                                                    data.append((file_path, "English", "pathological", "male", "pathological_male"))
+        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender', 'healthy_status_gender'])
 
     def german_language_pd(self) -> pd.DataFrame:
         data = []
@@ -101,18 +101,18 @@ class UtilsHandler:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "healthy", "female"))
+                                                            data.append((file_path, "German", "healthy", "female", "healthy_female"))
                                                         else:
-                                                            data.append((file_path, "German", "healthy", "female"))
+                                                            data.append((file_path, "German", "healthy", "female", "healthy_female"))
                                         elif subdir == "M":
                                             for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
                                                 for file in file_files:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "healthy", "male"))
+                                                            data.append((file_path, "German", "healthy", "male", "healthy_male"))
                                                         else:
-                                                            data.append((file_path, "German", "healthy", "male"))
+                                                            data.append((file_path, "German", "healthy", "male", "healthy_male"))
                             elif dir2 == "Pathological":
                                 for subroot, subdirs, subfiles in os.walk(os.path.join(root, dir2)):
                                     for subdir in subdirs:
@@ -122,9 +122,9 @@ class UtilsHandler:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "Cyste", "male"))
+                                                            data.append((file_path, "German", "Cyste", "male", "CYSTE_male"))
                                                         else:
-                                                            data.append((file_path, "German", "pathological", "male"))
+                                                            data.append((file_path, "German", "pathological", "male", "pathological_male"))
                                         elif subdir == "M":
                                             for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
                                                 for file in file_files:
@@ -146,18 +146,18 @@ class UtilsHandler:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "healthy", "female"))
+                                                            data.append((file_path, "German", "healthy", "female", "healthy_female"))
                                                         else:
-                                                            data.append((file_path, "German", "healthy", "female"))
+                                                            data.append((file_path, "German", "healthy", "female", "healthy_female"))
                                         elif subdir == "M":
                                             for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
                                                 for file in file_files:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "healthy", "male"))
+                                                            data.append((file_path, "German", "healthy", "male", "healthy_male"))
                                                         else:
-                                                            data.append((file_path, "German", "healthy", "male"))
+                                                            data.append((file_path, "German", "healthy", "male", "healthy_male"))
                             elif dir2 == "Pathological":
                                 for subroot, subdirs, subfiles in os.walk(os.path.join(root, dir2)):
                                     for subdir in subdirs:
@@ -167,18 +167,18 @@ class UtilsHandler:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "Laryngitis", "male"))
+                                                            data.append((file_path, "German", "Laryngitis", "male", "LARYNGITIS_female"))
                                                         else:
-                                                            data.append((file_path, "German", "pathological", "male"))
+                                                            data.append((file_path, "German", "pathological", "male", "pathological_female"))
                                         elif subdir == "M":
                                             for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
                                                 for file in file_files:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "Laryngitis", "male"))
+                                                            data.append((file_path, "German", "Laryngitis", "male", "LARYNGITIS_male"))
                                                         else:
-                                                            data.append((file_path, "German", "pathological", "male"))
+                                                            data.append((file_path, "German", "pathological", "male", "pathological_male"))
                 elif dir1 == "Phonasthenie":
                     for root, dirs2, files in os.walk(os.path.join(self.data_path, 'SVD', dir1)):
                         for dir2 in dirs2:
@@ -191,18 +191,18 @@ class UtilsHandler:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "healthy", "female"))
+                                                            data.append((file_path, "German", "healthy", "female", "healthy_female"))
                                                         else:
-                                                            data.append((file_path, "German", "healthy", "female"))
+                                                            data.append((file_path, "German", "healthy", "female", "healthy_female"))
                                         elif subdir == "M":
                                             for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
                                                 for file in file_files:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "healthy", "male"))
+                                                            data.append((file_path, "German", "healthy", "male", "healthy_male"))
                                                         else:
-                                                            data.append((file_path, "German", "healthy", "male"))
+                                                            data.append((file_path, "German", "healthy", "male", "healthy_male"))
                             elif dir2 == "Pathological":
                                 for subroot, subdirs, subfiles in os.walk(os.path.join(root, dir2)):
                                     for subdir in subdirs:
@@ -212,19 +212,19 @@ class UtilsHandler:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "Phonasthenie", "male"))
+                                                            data.append((file_path, "German", "Phonasthenie", "female", "PHONASTHENIE_female"))
                                                         else:
-                                                            data.append((file_path, "German", "pathological", "male"))
+                                                            data.append((file_path, "German", "pathological", "female", "pathological_female"))
                                         elif subdir == "M":
                                             for file_root, _, file_files in os.walk(os.path.join(subroot, subdir)):
                                                 for file in file_files:
                                                     if file.endswith(".wav"):
                                                         file_path = os.path.join(file_root, file)
                                                         if self.classification == "multi":
-                                                            data.append((file_path, "German", "Phonasthenie", "male"))
+                                                            data.append((file_path, "German", "Phonasthenie", "male", "PHONASTHENIE_male"))
                                                         else:
-                                                            data.append((file_path, "German", "pathological", "male"))
-        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender'])
+                                                            data.append((file_path, "German", "pathological", "male", "pathological_male"))
+        return pd.DataFrame(data, columns=['file_path', 'language', 'healthy_status', 'gender', 'healthy_status_gender'])
 
     def combined_language_pd(self) -> pd.DataFrame:
         czech_df = self.czech_language_pd()
@@ -271,6 +271,9 @@ class UtilsHandler:
 
         # add language column, every where English
         combined_df['language'] = 'English'
+
+        # create new column 'healthy_status_gender', fill with 'healthy_female' or 'healthy_male'
+        combined_df['healthy_status_gender'] = combined_df.apply(lambda x: f"{x['healthy_status']}_{x['gender']}", axis=1)
 
         return combined_df
 
