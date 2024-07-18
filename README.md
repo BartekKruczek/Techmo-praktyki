@@ -24,6 +24,7 @@
 - ~~naprawa wymiarowości wejścia do modelu~~
 - ~~połączenie ze sobą cech wektorowych w jedną macierz~~
 - naprawić sieć RNN -> nie chce się skutecznie uczyć
+- dodac ewaluacje per demografia -> kobieta, mężczyzna, dziecko (chore, zdrowe)
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)

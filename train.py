@@ -130,3 +130,6 @@ class TrainHandler():
 
         self.writer.close()
         return test_accuracy
+    
+    def evaluate_by_demographic(self) -> None:
+        pass
