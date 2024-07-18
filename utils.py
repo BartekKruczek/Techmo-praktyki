@@ -324,16 +324,15 @@ class UtilsHandler:
         return train_df, test_df
     
     def padd_input(self, batch):
-        inputs, labels = zip(*batch)
+        inputs, labels, demographics = zip(*batch)
 
         max_len = max([x.shape[-1] for x in inputs])
 
         inputs_padded = [F.pad(x, (0, max_len - x.shape[-1]), 'constant', 0) for x in inputs]
         inputs_padded = torch.stack(inputs_padded)
 
-        # usuwanie dodatkowej wymiarowości
         inputs_padded = inputs_padded.squeeze(1)
-
         labels = torch.tensor(labels)
+        demographics = torch.tensor(demographics)
 
-        return inputs_padded, labels
+        return inputs_padded, labels, demographics

@@ -82,8 +82,8 @@ def objective(trial):
 
     num_epochs: int = 10
 
-    do_train: bool = False
-    case_train = 2
+    do_train: bool = True
+    case_train = 1
 
     if do_train and case_train == 1:
         model = Model(num_classes = 2)

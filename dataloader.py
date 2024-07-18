@@ -28,13 +28,14 @@ class DataLoaderHandler(Dataset):
             # iterate in healthy_status column, if pathological 1, if healthy 0
             df['healthy_status'] = df['healthy_status'].apply(lambda x: 1 if x == 'pathological' else 0)
 
+            # same for 'healthy_status_gender' column
             df['healthy_status_gender'] = df['healthy_status_gender'].map({
-            'healthy_child': 0,
-            'pathological_child': 1,
-            'healthy_female': 2,
-            'pathological_female': 3,
-            'healthy_male': 4,
-            'pathological_male': 5
+                'healthy_child': 0,
+                'pathological_child': 1,
+                'healthy_female': 2,
+                'pathological_female': 3,
+                'healthy_male': 4,
+                'pathological_male': 5
             })
         else:
             class_mapping = {
@@ -52,28 +53,32 @@ class DataLoaderHandler(Dataset):
     def __getitem__(self, idx: int):
         dataframe = self.dataframe_cleaner()
 
+        if idx >= len(dataframe):
+            idx = idx % len(dataframe)
+
         audio_path = dataframe.iloc[idx]['file_path']
         label = dataframe.iloc[idx]['healthy_status']
-        label_gender = dataframe.iloc[idx]['healthy_status_gender']
+        demographic = dataframe.iloc[idx]['healthy_status_gender']
 
         # load audio file, extract mel spectrogram
         try:
-            y, sr = torchaudio.load(audio_path, normalize = True)
+            y, sr = torchaudio.load(audio_path, normalize=True)
 
             if self.augmentation:
                 y = self.apply_random_augmentation(y)
 
-            transform = torchaudio.transforms.MelSpectrogram(sample_rate = sr)
+            transform = torchaudio.transforms.MelSpectrogram(sample_rate=sr)
             mel_spectrogram = transform(y)
         except Exception as e:
             print(f"Error loading {audio_path}: {e}")
-            return self.__getitem__((idx + 1) % len(self))
+            return self.__getitem__((idx + 1) % len(dataframe))
 
         # convert to tensor, send to device
         mel_spectrogram = mel_spectrogram.to(self.device)
         label = torch.tensor(label, dtype=torch.long).to(self.device)
+        demographic = torch.tensor(demographic, dtype=torch.long).to(self.device)
 
-        return mel_spectrogram, (label, label_gender)
+        return mel_spectrogram, label, demographic
     
     def apply_random_augmentation(self, audio: torch.Tensor) -> torch.Tensor:
         # randomly select augmentation
