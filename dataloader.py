@@ -27,6 +27,15 @@ class DataLoaderHandler(Dataset):
         if self.classification != "multi":
             # iterate in healthy_status column, if pathological 1, if healthy 0
             df['healthy_status'] = df['healthy_status'].apply(lambda x: 1 if x == 'pathological' else 0)
+
+            df['healthy_status_gender'] = df['healthy_status_gender'].map({
+            'healthy_child': 0,
+            'pathological_child': 1,
+            'healthy_female': 2,
+            'pathological_female': 3,
+            'healthy_male': 4,
+            'pathological_male': 5
+            })
         else:
             class_mapping = {
                 'healthy': 0,
@@ -45,6 +54,7 @@ class DataLoaderHandler(Dataset):
 
         audio_path = dataframe.iloc[idx]['file_path']
         label = dataframe.iloc[idx]['healthy_status']
+        label_gender = dataframe.iloc[idx]['healthy_status_gender']
 
         # load audio file, extract mel spectrogram
         try:
@@ -63,7 +73,7 @@ class DataLoaderHandler(Dataset):
         mel_spectrogram = mel_spectrogram.to(self.device)
         label = torch.tensor(label, dtype=torch.long).to(self.device)
 
-        return mel_spectrogram, label
+        return mel_spectrogram, (label, label_gender)
     
     def apply_random_augmentation(self, audio: torch.Tensor) -> torch.Tensor:
         # randomly select augmentation
