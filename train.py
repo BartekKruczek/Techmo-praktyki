@@ -131,5 +131,10 @@ class TrainHandler():
         self.writer.close()
         return test_accuracy
     
-    def evaluate_by_demographic(self) -> None:
-        pass
+    def evaluate_by_demographic(self, all_labels, all_predictions) -> None:
+        demographics: list[str] = ["female_healthy", "female_pathological", "male_healthy", "male_pathological", "child_healthy", "child_pathological"]
+        my_results: dict[str, dict[str, list]] = {demographic: {"labels": [], "predictions": []} for demographic in demographics}
+
+        # iterate over all_labels
+        for i, data in enumerate(all_labels):
+            pass
