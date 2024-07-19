@@ -25,6 +25,7 @@
 - ~~połączenie ze sobą cech wektorowych w jedną macierz~~
 - naprawić sieć RNN -> nie chce się skutecznie uczyć
 - ~~dodac ewaluacje per demografia -> kobieta, mężczyzna, dziecko (chore, zdrowe)~~
+- dodać kolumnę id_speakera do dataframe i zrobić ewaluacje per mówca
 
 ## Opis baz danych:
 - [Czech_SLI](https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1597)

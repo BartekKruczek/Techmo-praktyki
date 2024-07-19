@@ -89,7 +89,7 @@ class TrainHandler():
 
             self.evaluate_by_demographic(all_labels, all_predictions, all_demographics, 'validation')
 
-            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy:.2f}, F1 Score: {validation_f1:.2f}, Precision: {validation_precision:.2f}, Recall: {validation_recall:.2f}")
+            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy}, F1 Score: {validation_f1}, Precision: {validation_precision}, Recall: {validation_recall}")
             self.writer.add_scalar('validation_loss', validation_loss / len(self.valid_loader), epoch)
             self.writer.add_scalar('validation_accuracy', validation_accuracy, epoch)
             self.writer.add_scalar('validation_f1', validation_f1, epoch)
@@ -129,7 +129,7 @@ class TrainHandler():
 
         self.evaluate_by_demographic(all_labels, all_predictions, all_demographics, 'test')
 
-        tqdm.write(f"Test Accuracy: {test_accuracy:.2f}, F1 Score: {test_f1:.2f}, Precision: {test_precision:.2f}, Recall: {test_recall:.2f}")
+        tqdm.write(f"Test Accuracy: {test_accuracy}, F1 Score: {test_f1}, Precision: {test_precision}, Recall: {test_recall}")
         self.writer.add_scalar('test_loss', test_loss / len(self.test_loader), epoch)
         self.writer.add_scalar('test_accuracy', test_accuracy, epoch)
         self.writer.add_scalar('test_f1', test_f1, epoch)
@@ -166,7 +166,7 @@ class TrainHandler():
                 precision = precision_score(labels, predictions, average='weighted')
                 recall = recall_score(labels, predictions, average='weighted')
 
-                tqdm.write(f"{phase} {demographic} - Accuracy: {accuracy:.2f}, F1 Score: {f1:.2f}, Precision: {precision:.2f}, Recall: {recall:.2f}")
+                tqdm.write(f"{phase} {demographic} - Accuracy: {accuracy}, F1 Score: {f1}, Precision: {precision}, Recall: {recall}")
                 self.writer.add_scalar(f'{phase}_{demographic}_accuracy', accuracy, self.num_epochs)
                 self.writer.add_scalar(f'{phase}_{demographic}_f1', f1, self.num_epochs)
                 self.writer.add_scalar(f'{phase}_{demographic}_precision', precision, self.num_epochs)
