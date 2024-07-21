@@ -22,6 +22,7 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesH
     
     def __getitem__(self, idx: int):
         features, label = PytorchModelHandler.__getitem__(self, idx)
+        features = features.squeeze(0)
         return features, label
     
     @staticmethod
@@ -47,9 +48,15 @@ class DataLoaderRNNHandler(DataLoaderHandler, PytorchModelHandler, MoreFeaturesH
         for i, data in enumerate(train_loader):
             inputs, labels = data
             batch_size, seq_len, feature_dim = inputs.size()
+
+            # squeeze
+            inputs_squeezed = inputs.squeeze(0)
+            batch_size_squeezed, seq_len_squeezed, feature_dim_squeezed = inputs_squeezed.size()
+
             all_values.append(feature_dim)
             all_counter += 1
             print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")
+            print(f"Batch size squeezed: {batch_size_squeezed}, Sequence length squeezed: {seq_len_squeezed}, Feature dimension squeezed: {feature_dim_squeezed}")
 
             if feature_dim > max_dim:
                 max_dim = feature_dim

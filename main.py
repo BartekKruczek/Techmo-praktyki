@@ -50,7 +50,7 @@ def objective(trial):
         my_data.audio_files_length_histogram(dataframe)
 
     # dataloader section, case = 1 if features mel spectrogram, case = 2 if features from model
-    case = 1
+    case = 2
     if case == 1:
         data_loader = DataLoaderHandler(dataframe, device, augmentation=True, classification = classif)
         # print(f"Len dataloader {data_loader.__len__()}")
@@ -58,9 +58,9 @@ def objective(trial):
         data_loader = DataLoaderRNNHandler(dataframe, device, augmentation=True, classification = classif)
         # print(f"Len dataloader RNN {data_loader.__len__()}")
 
-    # print(data_loader.__getitem__(0))
-    # print(f"Shape of 1-st element: {data_loader.__getitem__(0)[0].shape}")
-    # print(f"Type: {type(data_loader.__getitem__(0))}")
+    print(data_loader.__getitem__(0))
+    print(f"Shape of 1-st element: {data_loader.__getitem__(0)[0].shape}")
+    print(f"Type: {type(data_loader.__getitem__(0))}")
 
     # podział na zbiory
     do_stratified: bool = True
@@ -82,7 +82,7 @@ def objective(trial):
 
     num_epochs: int = 5
 
-    do_train: bool = True
+    do_train: bool = False
     case_train = 1
 
     if do_train and case_train == 1:
