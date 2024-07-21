@@ -26,6 +26,7 @@ class PytorchModelHandler(Dataset):
         """
         list_of_audio_paths = self.get_audio_paths()
         list_of_audio_labels = self.get_labels()
+        demographic = self.dataframe.iloc[idx]['healthy_status_gender']
 
         if len(list_of_audio_paths) == len(list_of_audio_labels):
             audio_path = list_of_audio_paths[idx]
@@ -38,9 +39,9 @@ class PytorchModelHandler(Dataset):
 
             if audio is not None and sr is not None:
                 features = self.extract_features(audio, sr)
-                return features, label
+                return features, label, demographic
             else:
-                return None, None
+                return None, None, None
 
     def dataframe_cleaner(self) -> pd.DataFrame:
         df = self.dataframe

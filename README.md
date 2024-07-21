@@ -18,7 +18,7 @@
 - ~~opcjonalnie zmniejszyć ilość daych - > jedna epoka trwa 1h~~
 - ~~podrasować istniejący model konwolucyjny~~
 - ~~dodać metryki takie jak F1, precision, recall~~
-- aktualizacja wizualizacji z multi klasyfikacji
+- ~~aktualizacja wizualizacji z multi klasyfikacji~~
 - ~~dodać ekstrakcje innych cech z sygnalu audio~~
 - ~~zbudowac model, ktory by przyjmowac cechy w postaci wektorowej~~
 - ~~naprawa wymiarowości wejścia do modelu~~

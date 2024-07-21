@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import numpy as np
 
 from sklearn.metrics import precision_score, recall_score, f1_score
 from tqdm import tqdm
@@ -34,11 +35,11 @@ class TrainHandlerRNN:
             self.model.train()
             running_loss = 0.0
             for i, data in enumerate(tqdm(self.train_loader), 0):
-                inputs, labels = data
+                inputs, labels, demographics = data
 
                 inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
 
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
+                inputs, labels, demographics = inputs.to(self.device), labels.to(self.device), demographics.to(self.device)
                 
                 batch_size, seq_len, feature_dim = inputs.size()
                 # print(f"Batch size: {batch_size}, Sequence length: {seq_len}, Feature dimension: {feature_dim}")
@@ -66,13 +67,14 @@ class TrainHandlerRNN:
             validation_loss = 0.0
             all_labels = []
             all_predictions = []
+            all_demographics = []
             with torch.no_grad():
                 for data in tqdm(self.valid_loader):
-                    inputs, labels = data
+                    inputs, labels, demographics = data
 
                     inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
 
-                    inputs, labels = inputs.to(self.device), labels.to(self.device)
+                    inputs, labels, demographics = inputs.to(self.device), labels.to(self.device), demographics.to(self.device)
                     outputs = self.model(inputs)
                     loss = criterion(outputs, labels)
                     validation_loss += loss.item()
@@ -87,6 +89,8 @@ class TrainHandlerRNN:
             validation_f1 = f1_score(all_labels, all_predictions, average='weighted')
             validation_precision = precision_score(all_labels, all_predictions, average='weighted')
             validation_recall = recall_score(all_labels, all_predictions, average='weighted')
+
+            self.evaluate_by_demographic(all_labels, all_predictions, all_demographics, 'validation')
 
             tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy:.2f}%, F1 Score: {validation_f1:.2f}, Precision: {validation_precision:.2f}, Recall: {validation_recall:.2f}")
             self.writer.add_scalar('validation_loss', validation_loss / len(self.valid_loader), epoch)
@@ -104,13 +108,14 @@ class TrainHandlerRNN:
         test_loss = 0.0
         all_labels = []
         all_predictions = []
+        all_demographics = []
         with torch.no_grad():
             for data in tqdm(self.test_loader):
-                inputs, labels = data
+                inputs, labels, demographics = data
 
                 inputs = DataLoaderRNNHandler.pad_feature_to_max_dim(self, inputs)
 
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
+                inputs, labels, demographics = inputs.to(self.device), labels.to(self.device), demographics.to(self.device)
                 outputs = self.model(inputs)
                 loss = criterion(outputs, labels)
                 test_loss += loss.item()
@@ -120,11 +125,14 @@ class TrainHandlerRNN:
 
                 all_labels.extend(labels.cpu().numpy())
                 all_predictions.extend(predicted.cpu().numpy())
+                all_demographics.extend(demographics.cpu().numpy())
 
         test_accuracy = 100 * correct / total
         test_f1 = f1_score(all_labels, all_predictions, average='weighted')
         test_precision = precision_score(all_labels, all_predictions, average='weighted')
         test_recall = recall_score(all_labels, all_predictions, average='weighted')
+
+        self.evaluate_by_demographic(all_labels, all_predictions, all_demographics, 'test')
 
         tqdm.write(f"Test Accuracy: {test_accuracy:.2f}%, F1 Score: {test_f1:.2f}, Precision: {test_precision:.2f}, Recall: {test_recall:.2f}")
         self.writer.add_scalar('test_loss', test_loss / len(self.test_loader), epoch)
@@ -135,3 +143,37 @@ class TrainHandlerRNN:
 
         self.writer.close()
         return test_accuracy
+    
+    def evaluate_by_demographic(self, all_labels, all_predictions, all_demographics, phase):
+        demographics_dict = {
+            0: "healthy_child",
+            1: "pathological_child",
+            2: "healthy_female",
+            3: "pathological_female",
+            4: "healthy_male",
+            5: "pathological_male"
+        }
+
+        results = {demographic: {"labels": [], "predictions": []} for demographic in demographics_dict.values()}
+
+        for label, prediction, demographic in zip(all_labels, all_predictions, all_demographics):
+            demographic_str = demographics_dict[demographic]
+            results[demographic_str]["labels"].append(label)
+            results[demographic_str]["predictions"].append(prediction)
+
+        for demographic, data in results.items():
+            labels = data["labels"]
+            predictions = data["predictions"]
+
+            if labels and predictions:
+                accuracy = (np.array(labels) == np.array(predictions)).mean() * 100
+                f1 = f1_score(labels, predictions, average='weighted')
+                precision = precision_score(labels, predictions, average='weighted')
+                recall = recall_score(labels, predictions, average='weighted')
+
+                tqdm.write(f"{phase} {demographic} - Accuracy: {accuracy}, F1 Score: {f1}, Precision: {precision}, Recall: {recall}")
+                self.writer.add_scalar(f'{phase}_{demographic}_accuracy', accuracy, self.num_epochs)
+                self.writer.add_scalar(f'{phase}_{demographic}_f1', f1, self.num_epochs)
+                self.writer.add_scalar(f'{phase}_{demographic}_precision', precision, self.num_epochs)
+                self.writer.add_scalar(f'{phase}_{demographic}_recall', recall, self.num_epochs)
+

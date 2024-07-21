@@ -58,12 +58,12 @@ def objective(trial):
         data_loader = DataLoaderRNNHandler(dataframe, device, augmentation=True, classification = classif)
         # print(f"Len dataloader RNN {data_loader.__len__()}")
 
-    print(data_loader.__getitem__(0))
-    print(f"Shape of 1-st element: {data_loader.__getitem__(0)[0].shape}")
-    print(f"Type: {type(data_loader.__getitem__(0))}")
+    # print(data_loader.__getitem__(0))
+    # print(f"Shape of 1-st element: {data_loader.__getitem__(0)[0].shape}")
+    # print(f"Type: {type(data_loader.__getitem__(0))}")
 
     # podział na zbiory
-    do_stratified: bool = True
+    do_stratified: bool = False
     if do_stratified:
         train_loader, val_loader, test_loader = my_utils.split_dataset_stratified(dataframe, device, sample_size = 0.8)
     else:
@@ -82,8 +82,8 @@ def objective(trial):
 
     num_epochs: int = 5
 
-    do_train: bool = False
-    case_train = 1
+    do_train: bool = True
+    case_train = 2
 
     if do_train and case_train == 1:
         model = Model(num_classes = 2)
