@@ -39,6 +39,7 @@ class PytorchModelHandler(Dataset):
 
             if audio is not None and sr is not None:
                 features = self.extract_features(audio, sr)
+                # features = features.unsqueeze(0)
                 return features, label, demographic
             else:
                 return None, None, None
@@ -81,16 +82,27 @@ class PytorchModelHandler(Dataset):
     def change_sr(self, audio: torch.Tensor, sr: int) -> torch.Tensor:
         return Resample(orig_freq=sr, new_freq=16000)(audio)
         
-    def extract_features(self, audio: torch.Tensor, sr: int) -> dict:
-        audio_np = audio.squeeze().numpy()
-        zcr = librosa.feature.zero_crossing_rate(y=audio_np)
-        sc = librosa.feature.spectral_centroid(y=audio_np, sr=sr)
-        ddm = librosa.feature.delta(librosa.feature.mfcc(y=audio_np, sr=sr))
+    def extract_features(self, audio: torch.Tensor = None, sr: int = None) -> dict:
+        # audio_np = audio.squeeze().numpy()
+        # zcr = librosa.feature.zero_crossing_rate(y = audio)
+        # sc = librosa.feature.spectral_centroid(y=audio_np, sr=sr)
+        # ddm = librosa.feature.delta(librosa.feature.mfcc(y=audio_np, sr=sr))
 
-        # stack features
-        features = np.vstack((zcr, sc, ddm)).T
+        # # stack features
+        # features = np.vstack((zcr, sc, ddm)).T
 
-        return torch.tensor(features, dtype=torch.float32)
+        # return torch.tensor(features, dtype=torch.float32)
+
+        # audio, sr = torchaudio.load("Database/SVD/Cyste/Pathological/F/Sentence/1340-phrase.wav")
+        # audio = audio.squeeze().numpy()
+
+        # mfcc = np.mean(librosa.feature.mfcc(y = audio, sr = sr, n_mfcc = 12).T, axis=0)
+        # return torch.tensor(mfcc, dtype=torch.float32)
+
+        audio = audio.squeeze().numpy()
+        mfcc = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=12)
+        return torch.tensor(mfcc, dtype=torch.float32)
+    
     
     def get_features(self) -> torch.Tensor:
         list_of_audio_paths = self.get_audio_paths()
@@ -129,3 +141,33 @@ class PytorchModelHandler(Dataset):
         stretched_audio = torch.nn.functional.interpolate(audio.unsqueeze(0), size=(stretch_length,), mode='nearest').squeeze(0)
 
         return stretched_audio
+    
+    def extract_features_inz(self, data, sample_rate):
+        result = np.array([])
+        # # ZCR
+        zcr = np.mean(librosa.feature.zero_crossing_rate(y=data).T, axis=0)
+        result = np.hstack((result, zcr))
+
+        # # Chroma_stft
+        stft = np.abs(librosa.stft(data))
+        chroma_stft = np.mean(
+            librosa.feature.chroma_stft(S=stft, sr=sample_rate).T, axis=0
+        )
+        result = np.hstack((result, chroma_stft))
+
+        # # MFCC
+        mfcc = np.mean(librosa.feature.mfcc(y=data, sr=sample_rate).T, axis=0)
+        result = np.hstack((result, mfcc))
+
+        # # Root Mean Square Value
+        # rms = np.mean(librosa.feature.rms(y=data).T, axis=0)
+        # result = np.hstack((result, rms))
+
+        # MelSpectogram
+        # mel = np.mean(
+        #     librosa.feature.melspectrogram(y=data, sr=sample_rate).T,
+        #     axis=0,
+        # )
+        # result = np.hstack((result, mel))
+
+        return result
