@@ -171,3 +171,7 @@ class PytorchModelHandler(Dataset):
         # result = np.hstack((result, mel))
 
         return result
+    
+    def get_features_inz(self, path):
+        data, sample_rate = librosa.load(path)
+        return self.extract_features_inz(data, sample_rate)
