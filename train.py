@@ -82,14 +82,14 @@ class TrainHandler():
                     all_predictions.extend(predicted.cpu().numpy())
                     all_demographics.extend(demographics.cpu().numpy())
 
-            validation_accuracy = 100 * correct / total
-            validation_f1 = f1_score(all_labels, all_predictions, average='weighted')
-            validation_precision = precision_score(all_labels, all_predictions, average='weighted')
-            validation_recall = recall_score(all_labels, all_predictions, average='weighted')
+            validation_accuracy = round(100 * correct / total, 2)
+            validation_f1 = round(f1_score(all_labels, all_predictions, average='weighted'), 2)
+            validation_precision = round(precision_score(all_labels, all_predictions, average='weighted'), 2)
+            validation_recall = round(recall_score(all_labels, all_predictions, average='weighted'), 2)
 
             self.evaluate_by_demographic(all_labels, all_predictions, all_demographics, 'validation')
 
-            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {validation_accuracy}, F1 Score: {validation_f1}, Precision: {validation_precision}, Recall: {validation_recall}")
+            tqdm.write(f"Epoch {epoch + 1}, Validation Accuracy: {round(validation_accuracy, 2)}, F1 Score: {round(validation_f1, 2)}, Precision: {round(validation_precision, 2)}, Recall: {round(validation_recall, 2)}")
             self.writer.add_scalar('validation_loss', validation_loss / len(self.valid_loader), epoch)
             self.writer.add_scalar('validation_accuracy', validation_accuracy, epoch)
             self.writer.add_scalar('validation_f1', validation_f1, epoch)
@@ -122,14 +122,14 @@ class TrainHandler():
                 all_predictions.extend(predicted.cpu().numpy())
                 all_demographics.extend(demographics.cpu().numpy())
 
-        test_accuracy = 100 * correct / total
-        test_f1 = f1_score(all_labels, all_predictions, average='weighted')
-        test_precision = precision_score(all_labels, all_predictions, average='weighted')
-        test_recall = recall_score(all_labels, all_predictions, average='weighted')
+        test_accuracy = round(100 * correct / total, 2)
+        test_f1 = round(f1_score(all_labels, all_predictions, average='weighted'), 2)
+        test_precision = round(precision_score(all_labels, all_predictions, average='weighted'), 2)
+        test_recall = round(recall_score(all_labels, all_predictions, average='weighted'), 2)
 
         self.evaluate_by_demographic(all_labels, all_predictions, all_demographics, 'test')
 
-        tqdm.write(f"Test Accuracy: {test_accuracy}, F1 Score: {test_f1}, Precision: {test_precision}, Recall: {test_recall}")
+        tqdm.write(f"Test Accuracy: {round(test_accuracy, 2)}, F1 Score: {round(test_f1, 2)}, Precision: {round(test_precision, 2)}, Recall: {round(test_recall, 2)}")
         self.writer.add_scalar('test_loss', test_loss / len(self.test_loader), epoch)
         self.writer.add_scalar('test_accuracy', test_accuracy, epoch)
         self.writer.add_scalar('test_f1', test_f1, epoch)
@@ -161,12 +161,12 @@ class TrainHandler():
             predictions = data["predictions"]
 
             if labels and predictions:
-                accuracy = (np.array(labels) == np.array(predictions)).mean() * 100
-                f1 = f1_score(labels, predictions, average='weighted')
-                precision = precision_score(labels, predictions, average='weighted')
-                recall = recall_score(labels, predictions, average='weighted')
+                accuracy = round((np.array(labels) == np.array(predictions)).mean() * 100, 2)
+                f1 = round(f1_score(labels, predictions, average='weighted'), 2)
+                precision = round(precision_score(labels, predictions, average='weighted'), 2)
+                recall = round(recall_score(labels, predictions, average='weighted'), 2)
 
-                tqdm.write(f"{phase} {demographic} - Accuracy: {accuracy}, F1 Score: {f1}, Precision: {precision}, Recall: {recall}")
+                tqdm.write(f"{phase} {demographic} - Accuracy: {round(accuracy, 2)}, F1 Score: {round(f1, 2)}, Precision: {round(precision, 2)}, Recall: {round(recall, 2)}")
                 self.writer.add_scalar(f'{phase}_{demographic}_accuracy', accuracy, self.num_epochs)
                 self.writer.add_scalar(f'{phase}_{demographic}_f1', f1, self.num_epochs)
                 self.writer.add_scalar(f'{phase}_{demographic}_precision', precision, self.num_epochs)

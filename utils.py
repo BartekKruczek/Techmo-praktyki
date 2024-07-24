@@ -7,12 +7,18 @@ import torch.nn.functional as F
 from torch.utils.data import SubsetRandomSampler
 from torch.utils.data import DataLoader
 from dataloader import DataLoaderHandler
+from dataloader_LFCC import DataLoaderHandlerLFCC
+from dataloader_SPEC import DataLoaderHandlerSPEC
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 class UtilsHandler:
-    def __init__(self, data_path: str, classification: str) -> None:
+    def __init__(self, data_path: str, classification: str, feature: int) -> None:
+        """
+        Feature: 1 -> mel spectrogram, 2 -> LFCC
+        """
         self.data_path = data_path
         self.classification = classification
+        self.feature = feature
 
     def __repr__(self) -> str:
         return f"Klasa do obsługi pomocniczych funkcji dla danych z folderu: {self.data_path}"
@@ -289,11 +295,24 @@ class UtilsHandler:
         val_sampler = SubsetRandomSampler(val_indices)
         test_sampler = SubsetRandomSampler(test_indices)
 
-        train_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=True, classification=self.classification), batch_size=32, sampler=train_sampler, collate_fn=self.padd_input)
-        val_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=False, classification=self.classification), batch_size=32, sampler=val_sampler, collate_fn=self.padd_input)
-        test_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=False, classification=self.classification), batch_size=32, sampler=test_sampler, collate_fn=self.padd_input)
+        if self.feature == 1:
+            train_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=True, classification=self.classification), batch_size=32, sampler=train_sampler, collate_fn=self.padd_input)
+            val_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=False, classification=self.classification), batch_size=32, sampler=val_sampler, collate_fn=self.padd_input)
+            test_loader = DataLoader(DataLoaderHandler(dataframe, device, augmentation=False, classification=self.classification), batch_size=32, sampler=test_sampler, collate_fn=self.padd_input)
 
-        return train_loader, val_loader, test_loader
+            return train_loader, val_loader, test_loader
+        elif self.feature == 2:
+            train_loader = DataLoader(DataLoaderHandlerLFCC(dataframe, device, augmentation=True, classification=self.classification), batch_size=32, sampler=train_sampler, collate_fn=self.padd_input)
+            val_loader = DataLoader(DataLoaderHandlerLFCC(dataframe, device, augmentation=False, classification=self.classification), batch_size=32, sampler=val_sampler, collate_fn=self.padd_input)
+            test_loader = DataLoader(DataLoaderHandlerLFCC(dataframe, device, augmentation=False, classification=self.classification), batch_size=32, sampler=test_sampler, collate_fn=self.padd_input)
+
+            return train_loader, val_loader, test_loader
+        elif self.feature == 3:
+            train_loader = DataLoader(DataLoaderHandlerSPEC(dataframe, device, augmentation=True, classification=self.classification), batch_size=32, sampler=train_sampler, collate_fn=self.padd_input)
+            val_loader = DataLoader(DataLoaderHandlerSPEC(dataframe, device, augmentation=False, classification=self.classification), batch_size=32, sampler=val_sampler, collate_fn=self.padd_input)
+            test_loader = DataLoader(DataLoaderHandlerSPEC(dataframe, device, augmentation=False, classification=self.classification), batch_size=32, sampler=test_sampler, collate_fn=self.padd_input)
+
+            return train_loader, val_loader, test_loader
     
     def split_dataset_stratified(self, dataframe: pd.DataFrame, device: torch.device, sample_size: int):
         stratified_split = StratifiedShuffleSplit(n_splits=1, train_size=sample_size, random_state=42)
@@ -313,11 +332,24 @@ class UtilsHandler:
         for train_index, val_index in stratified_split.split(train_df['file_path'], train_df[['healthy_status', 'language', 'gender']]):
             train_df, val_df = train_df.iloc[train_index], train_df.iloc[val_index]
 
-        train_loader = DataLoader(DataLoaderHandler(train_df, device, augmentation=True, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
-        val_loader = DataLoader(DataLoaderHandler(val_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
-        test_loader = DataLoader(DataLoaderHandler(test_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+        if self.feature == 1:
+            train_loader = DataLoader(DataLoaderHandler(train_df, device, augmentation=True, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+            val_loader = DataLoader(DataLoaderHandler(val_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+            test_loader = DataLoader(DataLoaderHandler(test_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
 
-        return train_loader, val_loader, test_loader
+            return train_loader, val_loader, test_loader
+        elif self.feature == 2:
+            train_loader = DataLoader(DataLoaderHandlerLFCC(train_df, device, augmentation=True, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+            val_loader = DataLoader(DataLoaderHandlerLFCC(val_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+            test_loader = DataLoader(DataLoaderHandlerLFCC(test_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+
+            return train_loader, val_loader, test_loader
+        elif self.feature == 3:
+            train_loader = DataLoader(DataLoaderHandlerSPEC(train_df, device, augmentation=True, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+            val_loader = DataLoader(DataLoaderHandlerSPEC(val_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+            test_loader = DataLoader(DataLoaderHandlerSPEC(test_df, device, augmentation=False, classification=self.classification), batch_size=32, collate_fn=self.padd_input)
+
+            return train_loader, val_loader, test_loader
     
     def train_test_split(self, dataframe: pd.DataFrame):
         train_df, test_df = train_test_split(dataframe, test_size=0.2, random_state=42)

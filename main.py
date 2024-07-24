@@ -11,6 +11,10 @@ from train import TrainHandler
 from train_RNN import TrainHandlerRNN
 from auto_features_extraction import AutoFeaturesExtraction
 from dataloader_RNN import DataLoaderRNNHandler
+from torchsummary import summary
+from pytorch_model import PytorchModelHandler
+from model_conv1d import ModelConv1D
+from run_inz import run
 
 def objective(trial):
     case = 2
@@ -25,7 +29,8 @@ def objective(trial):
     warnings.filterwarnings("ignore")
 
     classif: str = "binary"
-    my_utils = UtilsHandler(data_path = "Database", classification = classif) 
+    feature = 3
+    my_utils = UtilsHandler(data_path = "Database", classification = classif, feature = feature) 
     my_data = DataHandler(data_path = "Database", utils = my_utils, classification = classif)
     my_auto_features = AutoFeaturesExtraction()
 
@@ -34,6 +39,7 @@ def objective(trial):
     # print(f"Dataframe head: {dataframe.head()}")
 
     my_RNNHandler = DataLoaderRNNHandler(dataframe, device, augmentation = True, classification = classif)
+    my_pytorchmode = PytorchModelHandler(dataframe, augmentation = True, classification = classif)
 
     # data section
     create_excel: bool = True
@@ -62,12 +68,17 @@ def objective(trial):
     # print(f"Shape of 1-st element: {data_loader.__getitem__(0)[0].shape}")
     # print(f"Type: {type(data_loader.__getitem__(0))}")
 
+    # X, Y = my_pytorchmode.get_X_Y_inz(dataframe)
+
     # podział na zbiory
     do_stratified: bool = False
     if do_stratified:
         train_loader, val_loader, test_loader = my_utils.split_dataset_stratified(dataframe, device, sample_size = 0.8)
     else:
         train_loader, val_loader, test_loader = my_utils.split_dataset(dataframe, device)
+
+    # print(my_pytorchmode.extract_features())
+    # print(my_pytorchmode.extract_features().shape)
 
     # my_RNNHandler.check_inputs_shape(train_loader)
     # my_RNNHandler.check_inputs_shape_after_padding(train_loader)
@@ -83,7 +94,7 @@ def objective(trial):
     num_epochs: int = 5
 
     do_train: bool = True
-    case_train = 2
+    case_train = 4
 
     if do_train and case_train == 1:
         model = Model(num_classes = 2)
@@ -91,8 +102,15 @@ def objective(trial):
         accuracy = train_handler.train()
         return accuracy
     elif do_train and case_train == 2:
-        model = ModelRNNHandler(input_size = 1250, hidden_size = 512, num_layers = 15, num_classes = 2)
+        model = ModelRNNHandler(input_size = 12, hidden_size = 64, num_layers = 5, num_classes = 2)
+        # model = ModelConv1D(input_channels = 128, output_channels = 64, kernel_size = 3)
+        # summary(model, (1, 12))
         train_handler = TrainHandlerRNN(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
+        accuracy = train_handler.train()
+        return accuracy
+    elif do_train and case_train == 4:
+        model = Model(num_classes = 2)
+        train_handler = TrainHandler(model, train_loader, val_loader, test_loader, device, learning_rate, num_epochs, step_size, gamma, l1_lambda, l2_lambda)
         accuracy = train_handler.train()
         return accuracy
 
