@@ -7,3 +7,6 @@
 test_data/
 yamnet-model/
 .venv/
+.vscode/
+audio_classification_model/
+audio_classification_env/
